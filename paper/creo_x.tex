@@ -5,6 +5,8 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 \usepackage{graphicx}
 \usepackage{natbib}
 \bibliographystyle{plainnat}
@@ -115,6 +117,62 @@ identically in both arms, so a matched pair of runs differs by the value of $\be
 by nothing else. We hold $\beta = 0.90$ throughout and do not tune it; unbalanced tuning
 effort between a proposed component and its baseline is a known failure mode, and leaving
 the coefficient fixed is the conservative choice in a study whose finding is negative.
+
+Algorithm~\ref{alg:component} states the component in full, inside a generic host loop.
+The only line that differs from the unmodified host is line~\ref{line:term}; every other
+line, including all random draws, is the host's own. Setting $\beta = 0$ therefore
+recovers the host exactly rather than approximately, which is what licenses the matched
+pairing used throughout.
+
+\begin{algorithm}[htbp]
+\caption{Displacement reuse as a host-agnostic component. $\mathcal{U}_{\text{host}}$ is
+the host's unmodified proposal rule; $\mathcal{R}$ is the repair operator; $\prec$ is the
+host's own feasibility-aware comparison. The quantity $\Delta r$ is the only state the
+component adds, one vector per individual.}
+\label{alg:component}
+\begin{algorithmic}[1]
+\Require host $\mathcal{U}_{\text{host}}$, repair operator $\mathcal{R}$, coefficient
+  $\beta$, budget $B$, problem $(f, g, \text{lo}, \text{hi})$
+\State initialise population $P = \{x_1,\dots,x_N\}$ uniformly in $[\text{lo},\text{hi}]$
+\For{$i = 1 \dots N$}
+  \State $\Delta r_i \gets \mathbf{0}$
+      \Comment{no predecessor exists at initialisation, so no repair is applied}
+\EndFor
+\While{evaluations used $< B$}
+  \For{each individual $i$}
+    \State $\tilde{x} \gets \mathcal{U}_{\text{host}}(P, i)$
+        \Comment{host proposal, consuming the host's random draws}
+    \State $\tilde{x} \gets \tilde{x} + \beta\,\Delta r_i$
+        \label{line:term}
+        \Comment{\textbf{the component: one added term, no random draws}}
+    \State $x^{\text{stored}} \gets \mathrm{clip}(\tilde{x}, \text{lo}, \text{hi})$
+    \State $x^{\text{used}} \gets \mathrm{clip}\big(\mathcal{R}(x^{\text{stored}},
+           x^{\text{prev}}_i), \text{lo}, \text{hi}\big)$
+        \Comment{repair; identical in both arms}
+    \State $\Delta r_i \gets x^{\text{used}} - x^{\text{stored}}$
+        \Comment{retain the displacement for the next iteration}
+    \State evaluate $f(x^{\text{used}})$ and violation $v(x^{\text{used}})$
+    \State $c \gets (x^{\text{stored}}, x^{\text{used}}, \Delta r_i, f, v)$
+    \If{$c \prec P_i$}
+      \State $P_i \gets c$
+        \Comment{host selection, unchanged}
+    \EndIf
+  \EndFor
+\EndWhile
+\State \Return best individual by $\prec$
+\end{algorithmic}
+\end{algorithm}
+
+Three details in Algorithm~\ref{alg:component} are load-bearing and are easy to get wrong.
+First, the displacement is measured against the \emph{stored} point, not the proposal, so
+that domain clipping is attributed to the repair operator rather than to the component.
+Second, $\Delta r_i$ is read at the start of an iteration and written at the end, so the
+term always uses the previous iteration's displacement; using the current one would make
+the update implicit. Third, the operator receives $x^{\text{prev}}_i$, the incumbent the
+candidate was generated from. Omitting that argument makes a rate-limiting operator a
+silent no-op, because a rate limit is undefined without a predecessor: the arm then
+returns ties for every run and reads as a null result rather than as a bug. We check for
+this explicitly before each campaign.
 
 \section{Repair operators}
 
