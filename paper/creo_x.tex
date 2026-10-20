@@ -26,8 +26,8 @@ and the boundary of its usefulness}
 A recurring idea in constrained and bounded optimisation is that the correction a repair
 operator applies to an infeasible candidate is informative: it points away from the
 violated region, and so reusing it might guide the search. We test that idea as an
-algorithm component rather than as an algorithm. The component, which we call CREO, is a
-single term $\beta\,\Delta r$ added to the update rule of eight population-based
+algorithm component rather than as an algorithm. The component, which we call CREO, for Continuous
+Repair Evolutionary Optimiser, is a single term $\beta\,\Delta r$ added to the update rule of eight population-based
 optimisers, where $\Delta r$ is the displacement the repair operator applied to that
 individual at its last evaluation. At
 $\beta=0$ the arm is stream-identical to the unmodified host, so the comparison is a
@@ -129,9 +129,13 @@ the point actually evaluated after repair. For DE/rand/1/bin the complete rule r
 which differs from the canonical rule~\citep{storn1997} by the final term alone, so a
 reader can diff the two in one line.
 
-We name this term CREO so that it can be cited and built on. The name denotes the term in
-Equation~\ref{eq:component} and nothing else: it is not an algorithm, and a host carrying
-it is a \emph{configuration} of that host rather than a new method. We write ``DE with
+We name this term CREO, for \emph{Continuous Repair Evolutionary Optimiser}, so that it
+can be cited and built on. The name denotes the term in Equation~\ref{eq:component} and
+nothing else: it is not an algorithm, and a host carrying it is a \emph{configuration} of
+that host rather than a new method. Earlier work by the author used the expansion
+``Repair-Guided Evolutionary Optimisation'' for the same term; the present expansion is
+adopted here because it matches the acronym, and the two refer to the identical
+mechanism. We write ``DE with
 CREO'' or ``$\beta > 0$'' in preference to constructions such as ``CREO-DE'', because a
 roster of hyphenated names implies a family of algorithms where there is one coefficient.
 
