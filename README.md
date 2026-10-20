@@ -1,35 +1,36 @@
 # CREO-X
 
-Repair-displacement reuse as an algorithm component: a multi-geometry ablation and a
-shifted-optimum control.
+Code, campaigns and results for:
 
-## What this is
+> **CREO: a repair-displacement term for population-based search, and the boundary of its
+> usefulness**
+> Alan Immanuel Benjamin Vallavaraj, School of Computer Science and Engineering,
+> University of Westminster, London, UK
+
+The manuscript is in [`paper/creo_x.pdf`](paper/creo_x.pdf) and builds from
+[`paper/creo_x.tex`](paper/creo_x.tex).
+
+## The component
 
 A single scalar term is added to the update rule of eight population-based optimisers:
 
     x_i  =  <unmodified host update>  +  beta * dr_i
 
-where `dr_i` is the displacement the repair operator applied to that individual at its
-most recent evaluation. At `beta = 0` the arm is *stream-identical* to the unmodified
-host, because the term consumes no random numbers. That is what makes this a within-host
-ablation rather than a comparison between algorithms, and it is asserted for all eight
-hosts by `test_zero_term_equivalence.py`.
+where `dr_i` is the displacement the repair operator applied to that individual at its most
+recent evaluation. CREO stands for Continuous Repair Evolutionary Optimiser, and the name
+denotes this term and nothing else: it is not an algorithm, and a host carrying it is a
+configuration of that host.
 
-The question the campaigns answer: **is a repair displacement a usable search signal, and
-does the answer depend on the geometry of the repair operator?**
+At `beta = 0` the arm is *stream-identical* to the unmodified host, because the term
+consumes no random numbers. That is what makes this a within-host ablation rather than a
+comparison between algorithms, and it is asserted for all eight hosts by
+`test_zero_term_equivalence.py`.
 
-Measured answer: no, and no.
+## Findings
 
-## Headline results
-
-One job, completed in 1h17m49s on 32 cores: 29,760 + 46,080 runs, `beta = 0.90` held
-fixed and untuned, 20,000 function evaluations per run.
-
-### 1. The term is net harmful on the constrained suite, under every geometry
-
-Cells are host x problem, 96 per operator. Significance is Wilcoxon signed-rank over the
-31 paired seeds within a cell, Holm-corrected across the family. Cells with fewer than
-six pairs feasible in both arms are reported as untested rather than dropped.
+**1. On static problems the term is net harmful under every repair geometry tested.**
+Cells are host x problem, 96 per operator, Wilcoxon signed-rank over 31 paired seeds,
+Holm-corrected.
 
 | repair_op                  |   cells |   sig_better |   sig_worse |   not_sig |   untested_no_feasible_pairs |   pair_wins |   pair_ties |   pair_losses |   mean_fire_rate |
 |:---------------------------|--------:|-------------:|------------:|----------:|-----------------------------:|------------:|------------:|--------------:|-----------------:|
@@ -39,29 +40,12 @@ six pairs feasible in both arms are reported as untested rather than dropped.
 | random resample (null)     |      96 |            4 |          14 |        40 |                           38 |         656 |        1205 |          1115 |            0.637 |
 | rate limit (E06)           |      96 |            0 |          14 |        61 |                           21 |         970 |         218 |          1788 |            0.721 |
 
-The rate-limit operator - the geometry predicted to carry genuine directional
-information, being the component of the requested step a limiter refused - is **never**
-significantly better in any of its 96 cells. Every one of the eight hosts is net harmed:
+The rate-limit operator, the geometry predicted to carry genuine directional information,
+is never significantly better in any of its 96 cells.
 
-| host                  |   sig_better |   sig_worse |   pair_wins |   pair_losses |
-|:----------------------|-------------:|------------:|------------:|--------------:|
-| CMA-ES                |            0 |          14 |         478 |          1181 |
-| DE/current-to-pbest/1 |            1 |          22 |         224 |          1444 |
-| DE/rand/1/bin         |            0 |          21 |         182 |          1300 |
-| GA (SBX + polynomial) |            3 |           4 |         839 |          1006 |
-| GWO                   |            3 |          18 |         371 |          1294 |
-| L-SHADE               |            3 |          15 |         496 |          1125 |
-| SPSO-2011             |            5 |           9 |         611 |           880 |
-| eps-constrained DE    |            3 |          11 |         404 |          1060 |
-
-### 2. A benefit on a centre-biased suite is a centre-pull artefact
-
-Each BBOB landscape is run twice, differing *only* in where the optimum sits:
-`translated` f(x), with the optimum away from the domain centre, and `centred`
-f(x + x*), the same landscape with the optimum at the origin, which is the domain
-centre. The paired quantity is log10 of the ratio of optimality gaps; positive favours
-the term. `centre_advantage` is the median of (centred - translated) over matched
-landscapes.
+**2. A benefit reported on a centre-biased suite is a centre-pull artefact.** Each BBOB
+landscape is optimised twice, differing *only* in whether its optimum sits at the domain
+centre.
 
 | repair_op                  |   dim |    n |   median_improvement_centred |   median_improvement_translated |   centre_advantage |   frac_centred_larger |    p_holm |
 |:---------------------------|------:|-----:|-----------------------------:|--------------------------------:|-------------------:|----------------------:|----------:|
@@ -72,54 +56,113 @@ landscapes.
 | radial shrinkage (CEC2017) |    10 | 1920 |                     0.003305 |                       -0.074754 |           0.178466 |              0.664062 | 7.34e-58  |
 | radial shrinkage (CEC2017) |    30 | 1920 |                     0.070265 |                       -0.109061 |           0.368694 |              0.797396 | 2.51e-175 |
 
-Radial shrinkage, whose displacement always points at the domain centre, helps only in
-the `centred` variant and actively hurts in `translated`. Box projection does nothing
-either way. Ellipsoid projection, whose displacement is a true surface normal carrying D
-degrees of freedom and is therefore the most geometrically informative operator in the
-battery, is harmful in both variants.
+Radial shrinkage, whose displacement always points at the domain centre, helps only in the
+`centred` variant and hurts in `translated`. Ellipsoid projection, the most geometrically
+informative operator in the battery, is the most harmful of the five, which falsifies the
+idea that the displacement helps in proportion to the geometry it carries.
 
-The displacement's usefulness therefore does not increase with the geometric information
-it carries. The ellipsoid arm falsifies that hypothesis directly.
+**3. On a deployed rate-constrained tracking loop the term does work.** Sweeping `beta`
+within one controller, all other coefficients fixed, with `beta = 0` an exact zero-term
+baseline:
+
+|   beta |      auc |     succ |   repair |
+|-------:|---------:|---------:|---------:|
+|   0    | 0.421479 | 0.578438 | 0.876975 |
+|   0.25 | 0.421147 | 0.573125 | 0.873916 |
+|   0.5  | 0.41702  | 0.590312 | 0.879507 |
+|   0.75 | 0.412328 | 0.592188 | 0.89702  |
+|   0.9  | 0.409232 | 0.608438 | 0.92128  |
+|   1.1  | 0.403673 | 0.638438 | 0.975349 |
+|   1.5  | 0.397247 | 0.659062 | 0.999878 |
+
+Distance AUC falls strictly monotonically across all seven levels. Decomposing the deployed
+configuration's advantage over its bare host on this condition: 3.72% total, of which
+0.84% is attributable to the other differences between arms and **2.91% to `beta` alone**,
+so the term accounts for 78.1% of the effect.
+
+It improves every host in every one of the 21 profiles, by 3.14% to 21.31%. It does not
+reorder the field: four of the six equipped arms still rank below the strongest bare host,
+and the gain is inversely related to host quality (Spearman +0.83).
+
+| controller   |   mean_rank |
+|:-------------|------------:|
+| creo_gwo     |      1      |
+| creo_dfo     |      2.0476 |
+| gwo          |      2.9524 |
+| creo_pso     |      4      |
+| creo_de      |      5.1905 |
+| dfo          |      6.4762 |
+| pso          |      6.7619 |
+| creo_ga      |      7.5714 |
+| creo_jso     |      9      |
+| jso          |     10      |
+| ga           |     11      |
+| de           |     12      |
+
+**4. The dissociation is unexplained.** Seven structural features of that loop were
+replicated on standard problems as eight conditions: the rate-limit geometry and its limit
+magnitude, the 300-evaluation budget, the six-dimensional bounded control space, a
+rank-deficient objective matching the loop's six-to-two map, the first-order plant lag, a
+moving target at four rates, and a plant initialised opposite its target. In none did the
+term become beneficial. One difference remains untested and is named in the paper: the loop
+rate-limits about a *single shared* applied control, making every individual's `dr` a
+component of the same refused step.
 
 ## Layout
 
     repair_ops.py                   five box-parameterised repair operators
     hosts.py                        eight hosts behind one component interface
     campaign_constrained.py         8 hosts x 5 operators x 12 problems x 31 seeds x 2 arms
-    campaign_bbob.py                the shifted-optimum control
+    campaign_bbob.py                shifted-optimum control (translated vs centred)
+    campaign_dynamic.py             moving-target control (four drift rates)
+    campaign_setpoint.py            rank-deficiency, plant lag and traverse replication
     analyse_campaigns.py            matched-pair analysis and the centre-pull test
+    analyse_dynamic.py              drift analysis and the tracking-conjecture test
+    analyse_setpoint.py             degeneracy, lag and traverse tests
     test_zero_term_equivalence.py   beta=0 must be the unmodified host
     _check_ratelimit.py             guards against a silently dead rate-limit arm
-    run_creo_campaigns.sbatch       Slurm submission, with both gates before compute
-    results/                        analysis output
-    paper/creo_methods.tex          methods section
+    _check_dynamic.py               guards that the drift schedule changes the problem
+    run_*.sbatch                    Slurm submission, gates before compute
+    results/                        all analysis output
+    paper/                          manuscript, bibliography and figures
 
 ## Reproducing
 
-    python -m pip install numpy pandas scipy statsmodels pymoo ioh cma pyarrow pytest
+    python -m pip install -r requirements.txt
     python -m pytest test_zero_term_equivalence.py -q    # must pass before anything else
     python _check_ratelimit.py                           # must print RATE_LIMIT_LIVE_OK
     CREO_WORKERS=32 python campaign_constrained.py
     CREO_WORKERS=32 python campaign_bbob.py
     python analyse_campaigns.py
 
-Both campaigns assert full row count and arm/operator coverage before writing their
-output, and the submission script runs the two gates first, so a dead arm fails in
+`CREO_BUDGET` and `CREO_DIMS` override the evaluation budget and dimensionality for the
+replication campaigns. Every campaign asserts full row count and arm coverage before
+writing output, and the submission scripts run the gates first, so a dead arm fails in
 seconds rather than after an hour of compute.
 
 ## Two implementation notes that matter
 
-- The rate-limit operator is a no-op unless every host passes the individual's
-  predecessor into the evaluator. The predecessor used here is the incumbent the
-  candidate is generated from, except for CMA-ES, which has no per-individual
-  predecessor and uses the distribution mean. Omitting this silently produces an
-  all-ties arm that looks like a null result.
-- On macOS, build archives with `COPYFILE_DISABLE=1 tar ...`, or AppleDouble sidecars
-  (`._hosts.py`) travel with the bundle.
+- The rate-limit operator is a no-op unless every host passes the individual's predecessor
+  into the evaluator. The predecessor used here is the incumbent the candidate is generated
+  from, except for CMA-ES, which has no per-individual predecessor and uses the
+  distribution mean. Omitting this silently produces an all-ties arm that reads as a null
+  result.
+- Keep `multiprocessing.Pool` construction inside `if __name__ == '__main__'`. macOS spawns
+  rather than forks, so an unguarded module-level pool makes every worker re-import the
+  module and create another pool.
 
-## Not in this repository
+## Data availability
 
-The two raw per-run tables (`constrained_pairs.parquet`, 3.5 MB; `bbob_pairs.parquet`,
-899 KB) and the two matched-pair expansions (`constrained_pairs_matched.csv`, 14,880
-rows; `bbob_pairs_matched.csv`, 23,040 rows) are held on the compute cluster and are
-intended for the Zenodo companion deposit rather than for git.
+`results/` holds the analysis tables. The raw per-run tables
+(`constrained_pairs.parquet`, `bbob_pairs.parquet`, and the matched-pair expansions of
+14,880 and 23,040 rows) are excluded from git by `.gitignore` and are deposited
+separately; see `.zenodo.json`.
+
+## Licence
+
+Code is MIT (`LICENSE`). Results, figures and manuscript content are CC BY 4.0
+(`LICENSE-DATA`).
+
+## Citing
+
+See `CITATION.cff`.
