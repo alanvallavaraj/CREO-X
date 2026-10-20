@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this software or its results, please cite the following."
+title: "CREO: a repair-displacement term for population-based search, and the boundary of its usefulness"
+abstract: >-
+  Code, campaign scripts and result tables for a within-host ablation of the CREO
+  repair-displacement term across eight population-based optimisers, five repair
+  geometries, a shifted-optimum control, a moving-target control and a deployed
+  rate-constrained tracking loop.
+authors:
+  - family-names: Vallavaraj
+    given-names: "Alan Immanuel Benjamin"
+    email: a.vallavaraj@westminster.ac.uk
+    affiliation: "School of Computer Science and Engineering, University of Westminster, London, UK"
+license: MIT
+repository-code: "https://github.com/alanvallavaraj/CREO-X"
+keywords:
+  - algorithm components
+  - repair operators
+  - constraint handling
+  - within-host ablation
+  - benchmark bias
+  - differential evolution
+  - negative results
