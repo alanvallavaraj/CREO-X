@@ -17,7 +17,7 @@
 and the boundary of its usefulness}
 \author{Alan Immanuel Benjamin Vallavaraj\\
 \small \texttt{a.vallavaraj@westminster.ac.uk}}
-\date{\today}
+\date{}
 
 \begin{document}
 \maketitle
@@ -342,6 +342,18 @@ rate limit (E06) & 0 & 14 & 61 & 21 & 970 & 218 & 1788 \\
 \end{tabular}
 \end{table}
 
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig1_operator_ablation.png}
+\caption{Constrained suite, 29{,}760 matched runs. Each cell is one host on one problem,
+tested by Wilcoxon signed-rank over 31 paired seeds and Holm-corrected; ``untested'' marks
+cells with fewer than six seed pairs feasible in both arms. The rate-limit operator is
+significantly better in none of its 96 cells, marked by the stub at zero. $\beta = 0.90$
+throughout.}
+\label{fig:operator}
+\end{figure}
+
 The effect is not confined to particular hosts. Table~\ref{tab:host} shows that all eight
 are net harmed, the genetic algorithm coming closest to neutral at three cells better
 against four worse.
@@ -411,6 +423,18 @@ difference of the two medians, and the two need not agree: at $D=30$ the medians
 $0.179$ while the median paired difference is $0.369$. The paired quantity is the correct
 one here, because each landscape contributes a centred and a translated run of the same
 function at the same instance, dimension and seed.
+
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig2_centre_pull.png}
+\caption{Shifted-optimum control, 46{,}080 matched runs, $n = 1920$ matched landscapes per
+point. Each pair of markers is the same BBOB landscape optimised twice, differing only in
+whether its optimum sits at the domain centre. Positive values favour the component. The
+grey connector is the centre advantage, significant at Holm $p = 7.3\times10^{-58}$
+($D=10$) and $2.5\times10^{-175}$ ($D=30$) for radial shrinkage.}
+\label{fig:centrepull}
+\end{figure}
 
 Box projection shows no effect in either variant. Ellipsoid projection is harmful in
 both, and more harmful in the centred variant, which is the opposite of a centre-pull
@@ -553,6 +577,19 @@ $\beta$ & Distance AUC $\downarrow$ & Success $\uparrow$ & Repair rate \\
 \end{tabular}
 \end{table}
 
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig3_beta_dose_response.png}
+\caption{Closed loop, baseline stress condition, 67{,}200 matched episodes per arm. All
+coefficients other than $\beta$ are held fixed, and the component block draws its random
+numbers irrespective of $\beta$, so the $\beta = 0$ arm is stream-identical to the others.
+Distance AUC falls strictly monotonically across all seven levels; success rises overall
+with a single dip at $\beta = 0.25$. The effect has not saturated at the largest value
+tested.}
+\label{fig:dose}
+\end{figure}
+
 Distance AUC decreases strictly monotonically across all seven levels and success rises
 with it, from $0.578$ at $\beta = 0$ to $0.659$ at $\beta = 1.50$, and the effect has not
 saturated at the largest value tested. Decomposing the gain of the deployed configuration
@@ -603,6 +640,19 @@ episode begins with a long rate-limited traverse. In none of these did the term 
 beneficial; the rank-deficient, rate-limited, lagged condition that most closely matches
 the loop is in fact the most harmful cell in the entire study (median benefit $-0.0157$,
 helped in $23.9\%$ of matched pairs).
+
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig4_replications.png}
+\caption{Eight attempts to reproduce the closed loop's conditions on standard problems,
+restricted to the rate-limit operator that the loop itself uses, pooled over hosts,
+functions, drift rates and seeds. Values are the median fraction of matched pairs in which
+the component reduced normalised tracking error; $0.5$ is no effect. Three conditions match
+the loop exactly on the feature named. In none does the component help in more than half of
+pairs, against the dose-response of Figure~\ref{fig:dose} on the loop itself.}
+\label{fig:replications}
+\end{figure}
 
 One structural difference remains, which we name but did not test. In the loop the rate
 limit is applied about a \emph{single} applied control that advances once per cycle, so the
