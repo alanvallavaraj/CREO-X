@@ -1,0 +1,6 @@
+repair_op,cells,sig_better,sig_worse,not_sig,untested_no_feasible_pairs,pair_wins,pair_ties,pair_losses,mean_fire_rate
+box projection,96.0,6.0,17.0,44.0,29.0,900.0,454.0,1622.0,0.8295424899193549
+ellipsoid projection,96.0,5.0,31.0,13.0,47.0,519.0,30.0,2427.0,0.997126058467742
+radial shrinkage (CEC2017),96.0,3.0,38.0,31.0,24.0,560.0,78.0,2338.0,0.867182073252688
+random resample (null),96.0,4.0,14.0,40.0,38.0,656.0,1205.0,1115.0,0.637438373655914
+rate limit (E06),96.0,0.0,14.0,61.0,21.0,970.0,218.0,1788.0,0.7213765456989246
