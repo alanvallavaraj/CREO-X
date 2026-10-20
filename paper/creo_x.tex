@@ -13,8 +13,8 @@
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
 \usepackage{microtype}
 
-\title{Reusing the repair displacement is not a search signal:\\
-a multi-geometry ablation and a shifted-optimum control}
+\title{CREO: a repair-displacement term for population-based search,\\
+and the boundary of its usefulness}
 \author{Alan Immanuel Benjamin Vallavaraj}
 \date{\today}
 
@@ -25,9 +25,10 @@ a multi-geometry ablation and a shifted-optimum control}
 A recurring idea in constrained and bounded optimisation is that the correction a repair
 operator applies to an infeasible candidate is informative: it points away from the
 violated region, and so reusing it might guide the search. We test that idea as an
-algorithm component rather than as an algorithm. A single term $\beta\,\Delta r$ is added
-to the update rule of eight population-based optimisers, where $\Delta r$ is the
-displacement the repair operator applied to that individual at its last evaluation. At
+algorithm component rather than as an algorithm. The component, which we call CREO, is a
+single term $\beta\,\Delta r$ added to the update rule of eight population-based
+optimisers, where $\Delta r$ is the displacement the repair operator applied to that
+individual at its last evaluation. At
 $\beta=0$ the arm is stream-identical to the unmodified host, so the comparison is a
 within-host ablation in which a matched pair differs by one scalar and nothing else. We
 run 29{,}760 matched runs over twelve nonlinearly constrained problems with five repair
@@ -122,6 +123,12 @@ the point actually evaluated after repair. For DE/rand/1/bin the complete rule r
 \end{equation}
 which differs from the canonical rule~\citep{storn1997} by the final term alone, so a
 reader can diff the two in one line.
+
+We name this term CREO so that it can be cited and built on. The name denotes the term in
+Equation~\ref{eq:component} and nothing else: it is not an algorithm, and a host carrying
+it is a \emph{configuration} of that host rather than a new method. We write ``DE with
+CREO'' or ``$\beta > 0$'' in preference to constructions such as ``CREO-DE'', because a
+roster of hyphenated names implies a family of algorithms where there is one coefficient.
 
 Two properties make this an ablation rather than a comparison of algorithms. First, the
 term is additive and draws no random numbers, so setting $\beta = 0$ recovers the
