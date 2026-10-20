@@ -603,7 +603,8 @@ is a dose-response rather than a single comparison.
 \subsection{What the ranking does and does not say}
 
 Table~\ref{tab:rank} gives the mean rank of twelve arms over the 21 profiles. The term
-improves every host it is attached to, in every profile. It does not, however, reorder the
+improves every host it is attached to, in every one of the 21 profiles, by between
+$3.14\%$ and $21.31\%$ in distance AUC. It does not, however, reorder the
 field: four of the six component-equipped arms still rank below the strongest bare host,
 and the relative gain is strongly inversely related to host quality (Spearman $+0.83$
 between a host's own AUC and the gain the term delivers on it). The correct reading is
@@ -646,7 +647,8 @@ helped in $23.9\%$ of matched pairs).
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{figures/fig4_replications.png}
-\caption{Eight attempts to reproduce the closed loop's conditions on standard problems,
+\caption{Eight conditions spanning the seven structural features of the closed loop listed in
+Section~\ref{sec:loop}, replicated on standard problems,
 restricted to the rate-limit operator that the loop itself uses, pooled over hosts,
 functions, drift rates and seeds. Values are the median fraction of matched pairs in which
 the component reduced normalised tracking error; $0.5$ is no effect. Three conditions match
@@ -701,8 +703,8 @@ with harm increasing as the target moves faster).
 
 What survives is harder and more interesting. Section~\ref{sec:loop} establishes, with a
 monotone dose-response against an exact zero-term baseline, that the term does real work
-in one deployed closed loop. Eight attempts to reproduce the conditions of that loop on
-standard problems all failed to make it beneficial. So we are left with a mechanism that
+in one deployed closed loop. Seven structural features of that loop, replicated on standard problems as eight
+conditions, all failed to make it beneficial. So we are left with a mechanism that
 is reliably harmful in every controlled setting we could construct and reliably helpful in
 the uncontrolled one it was designed for, and we cannot yet say why. We name the
 population-coherence of the displacement as the leading candidate: a rate limit about a
