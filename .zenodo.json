@@ -1,0 +1,28 @@
+{
+  "title": "CREO: a repair-displacement term for population-based search, and the boundary of its usefulness",
+  "upload_type": "dataset",
+  "description": "Raw per-run tables and analysis output for a within-host ablation of the CREO repair-displacement term: a constrained-suite campaign (29,760 matched runs), a shifted-optimum control (46,080), a moving-target control (19,200), a short-horizon replication, a matched-dimension replication and a rank-deficiency/plant-lag replication. Companion to the code repository github.com/alanvallavaraj/CREO-X.",
+  "creators": [
+    {
+      "name": "Vallavaraj, Alan Immanuel Benjamin",
+      "affiliation": "School of Computer Science and Engineering, University of Westminster, London, UK"
+    }
+  ],
+  "license": "cc-by-4.0",
+  "keywords": [
+    "algorithm components",
+    "repair operators",
+    "constraint handling",
+    "within-host ablation",
+    "benchmark bias",
+    "differential evolution",
+    "negative results"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/alanvallavaraj/CREO-X",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ]
+}
