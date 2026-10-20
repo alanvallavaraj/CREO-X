@@ -42,11 +42,15 @@ domain centre and hurts when the same landscape is translated away from it, with
 centre advantage of $+0.368$ in $\log_{10}$ gap ratio at $D=30$. Third, the natural
 explanation that a displacement helps in proportion to the geometric information it
 carries is falsified: the ellipsoid-projection operator, whose displacement is a true
-surface normal with $D$ degrees of freedom, is the most harmful of the five. We conclude
-that displacement reuse is not a usable search signal on static problems under any
-geometry we tested, and that benchmark results for this family of mechanism on
-centre-biased suites should be read as confounded until a shifted-optimum control is
-reported alongside them.
+surface normal with $D$ degrees of freedom, is the most harmful of the five. Finally, a
+third campaign of 19{,}200 runs tests the remaining conjecture, that the mechanism belongs
+to tracking rather than to static search, by letting the optimum drift at four rates with
+the static case retained as an internal control; the conjecture is refuted in the
+direction opposite to the one predicted, the component becoming more harmful as the target
+moves faster. Across roughly 95{,}000 matched runs we find no setting in which displacement
+reuse helps. We conclude that benchmark results for this family of mechanism should be
+read as confounded unless a shifted-optimum control and a moving-target arm are reported
+alongside them.
 \end{abstract}
 
 \section{Introduction}
@@ -88,6 +92,10 @@ out to be explained by a property of the benchmark rather than by the mechanism.
 \item A falsification of the obvious mechanistic explanation. If displacement reuse
   worked because the displacement carries geometric information, the operator carrying
   the most information would help the most. It harms the most.
+\item A moving-target control (19{,}200 matched runs) that tests, and refutes, the
+  remaining conjecture that the mechanism belongs to tracking rather than to static
+  search. The static case is retained as an amplitude-zero arm inside the same grid, so
+  the comparison is internal.
 \end{enumerate}
 
 \section{The component}
@@ -247,6 +255,25 @@ and not in the translated one. If it does, a benefit reported on a suite whose o
 biased towards the centre is a centre-seeking artefact rather than repair
 guidance~\citep{kudela2022}.
 
+\paragraph{Moving-target control.} The static campaigns leave one conjecture open: that
+displacement reuse belongs to \emph{tracking} rather than to repair geometry. We test it
+inside a single design. Each of six BBOB functions, spanning separable to highly
+multimodal, is optimised at $D \in \{10,30\}$ with its optimum displaced along a
+deterministic trajectory
+\begin{equation}
+  s(t) \;=\; A\,\tfrac{1}{2}(\text{hi}-\text{lo})\,\sin\!\big(2\pi t / T\big)\,\hat{d},
+  \qquad T = B/4,
+\end{equation}
+where $t$ is the evaluation index, $\hat{d}$ a unit direction fixed per function, and $A$
+the drift amplitude as a fraction of the domain half-width. Crucially $A = 0$ reproduces
+the static case, so the control is \emph{internal} to the campaign rather than a
+comparison across campaigns. Eight hosts $\times$ five operators $\times$ six functions
+$\times$ two dimensions $\times$ four amplitudes $\times$ five seeds $\times$ two arms
+gives 19{,}200 runs. Because the schedule depends on $t$ alone it is identical in both
+arms of a matched pair. Best-so-far objective value is meaningless when the optimum
+moves, so the reported measure is \emph{tracking error}: the mean distance from each
+evaluated point to the optimum's current location, normalised by the domain width.
+
 \paragraph{Statistics.} Arms are paired exactly on host, operator, problem, dimension and
 seed. On the constrained suite, runs are ordered by the feasibility-aware key, matching
 the selection rule used inside the hosts; the objective is compared by Wilcoxon
@@ -393,6 +420,69 @@ radial shrinkage (CEC2017) & translated & 30 & -0.1091 & 0.321 & 0.961 & $1.82\t
 \end{tabular}
 \end{table}
 
+\subsection{The tracking conjecture, tested and refuted}
+
+If the mechanism's premise is that a refused step describes a constraint the search is
+actively fighting, then its value should rise as the target moves. It does not.
+Table~\ref{tab:drift} reports the effect at each drift amplitude: at every level between
+five and six of the ten operator-by-dimension cells are significantly harmful and
+\emph{none} is significantly helpful, and the median benefit becomes more negative as the
+target moves faster, from $-0.0028$ static to $-0.0046$ at $A = 0.20$.
+
+\begin{table}[htbp]
+\centering
+\caption{Moving-target control. Cells are operator $\times$ dimension, ten per drift
+amplitude; ``benefit'' is the reduction in normalised tracking error attributable to the
+component, so positive favours it. $A = 0$ is the static control internal to this
+campaign.}
+\label{tab:drift}
+\small
+\begin{tabular}{rrrrrr}
+\toprule
+Drift $A$ & Cells & Sig.\ harmful & Sig.\ helpful & Median benefit & Helped frac. \\
+\midrule
+0.00 & 10 & 5 & 0 & -0.00280 & 0.404 \\
+0.01 & 10 & 6 & 0 & -0.00390 & 0.402 \\
+0.05 & 10 & 5 & 0 & -0.00347 & 0.429 \\
+0.20 & 10 & 6 & 0 & -0.00463 & 0.398 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:conjecture} tests the conjecture directly, comparing each configuration's
+benefit when the target moves against the same configuration's benefit when it is
+static. The drift advantage is zero to five decimal places at every amplitude, the
+moving case is better in $48.5\%$ to $49.8\%$ of matched configurations, which is a coin
+flip, and Holm-corrected $p = 1.0$ throughout. Restricting to the rate-limit operator,
+the geometry whose displacement is precisely a refused step, does not rescue it: at the
+largest amplitude the component is \emph{significantly worse} than in the static case
+($-0.0017$, Holm $p = 0.039$).
+
+\begin{table}[htbp]
+\centering
+\caption{The tracking conjecture. ``Drift adv.'' is the median of (benefit when moving
+$-$ benefit when static) over configurations matched on host, operator, function,
+dimension and seed. A positive value would support the conjecture.}
+\label{tab:conjecture}
+\small
+\begin{tabular}{lrrrrrl}
+\toprule
+Scope & $A$ & $n$ & Static benefit & Moving benefit & Drift adv. & Holm $p$ \\
+\midrule
+all operators & 0.01 & 2400 & -0.00096 & -0.00133 & +0.00000 & 1.0000 \\
+all operators & 0.05 & 2400 & -0.00096 & -0.00122 & +0.00000 & 1.0000 \\
+all operators & 0.20 & 2400 & -0.00096 & -0.00167 & +0.00000 & 1.0000 \\
+\midrule
+rate limit only & 0.01 & 480 & --- & -0.00701 & +0.00000 & 0.5544 \\
+rate limit only & 0.05 & 480 & --- & -0.00660 & -0.00000 & 0.9717 \\
+rate limit only & 0.20 & 480 & --- & -0.00980 & -0.00167 & 0.0393 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The conjecture is therefore refuted on its own terms, and refuted in the direction
+opposite to the one predicted: target motion makes the component worse, not better.
+
 \section{Discussion}
 
 \paragraph{What is falsified.} The intuition motivating displacement reuse is that
@@ -416,15 +506,22 @@ any instance set that does not share that bias. We would suggest that any mechan
 displacement has a systematic direction in the search box should report a shifted-optimum
 control as a matter of course.
 
-\paragraph{What remains open.} This study tests static problems: the objective does not
-move during a run. The intuition behind displacement reuse is arguably better suited to a
-\emph{tracking} setting, where a controller repeatedly proposes a step, a rate limiter
-refuses part of it, and the target itself moves between iterations. There the refused
-component is a statement about a constraint the controller is currently fighting, rather
-than about a fixed feasible set it is merely bumping into. Nothing in this paper supports
-or refutes that case, and we state it as a conjecture rather than a result. It is also the
-only setting we can presently see in which the mechanism's premise is not already excluded
-by the evidence reported here.
+\paragraph{What remains open.} Very little, for this mechanism. The three obvious
+defences have now been tested and have failed: that the displacement carries useful
+constraint geometry (falsified by the ellipsoid operator being the most harmful), that
+the reported benchmark benefit reflects repair guidance (explained instead by domain-centre
+bias), and that the mechanism belongs to tracking rather than to static search (refuted,
+with harm increasing as the target moves faster). We can no longer offer a mechanism by
+which reusing a repair displacement would help a population-based search, and we think
+the burden has shifted: a future report of benefit for this family of term should come
+with a shifted-optimum control and a moving-target arm, because without them the two most
+likely confounds remain unexcluded.
+
+This does not establish that no instance of the family can ever help. It establishes that
+across eight hosts, five repair geometries, two standard problem classes, four rates of
+target motion and roughly 95{,}000 matched runs, we found no setting in which it did, and
+that the two explanations previously offered for an observed benefit do not survive a
+direct test.
 
 \section{Threats to validity}
 
@@ -448,8 +545,10 @@ version.
 Code, the submission script, the per-cell results for all 480 cells and the aggregate
 tables reported here are available at
 \url{https://github.com/alanvallavaraj/CREO-X}. The campaigns are gated: an equivalence
-test asserting that $\beta=0$ reproduces the unmodified host, and a liveness check
-asserting that every operator actually fires on every host, both run before any compute.
+test asserting that $\beta=0$ reproduces the unmodified host, a liveness check asserting
+that every operator actually fires on every host, and for the moving-target campaign a
+check that the drift schedule measurably changes the tracking problem, all run before any
+compute.
 Both campaigns assert full row count and arm coverage before writing output. The
 aggregate tables reported here recompute exactly from the committed per-cell table.
 
