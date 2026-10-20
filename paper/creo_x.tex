@@ -47,10 +47,17 @@ third campaign of 19{,}200 runs tests the remaining conjecture, that the mechani
 to tracking rather than to static search, by letting the optimum drift at four rates with
 the static case retained as an internal control; the conjecture is refuted in the
 direction opposite to the one predicted, the component becoming more harmful as the target
-moves faster. Across roughly 95{,}000 matched runs we find no setting in which displacement
-reuse helps. We conclude that benchmark results for this family of mechanism should be
-read as confounded unless a shifted-optimum control and a moving-target arm are reported
-alongside them.
+moves faster. Against this, we report one environment in which the term demonstrably does
+work: a deployed rate-constrained set-point tracking loop, where a sweep of $\beta$ against
+a stream-identical zero-term baseline gives a strictly monotone dose-response and the term
+accounts for $78\%$ of the configuration's advantage over its bare host. We could not
+identify the structural property responsible: reproducing the loop's repair geometry,
+limit magnitude, budget, dimensionality, objective rank-deficiency, plant lag and
+long-traverse initialisation, singly and in combination, never made the term beneficial.
+We conclude that displacement reuse is not a general search signal, that benchmark results
+for this family should be read as confounded unless a shifted-optimum control is reported
+alongside them, and that the dissociation between static and closed-loop behaviour is a
+concrete open problem rather than a resolved one.
 \end{abstract}
 
 \section{Introduction}
@@ -183,6 +190,7 @@ returns ties for every run and reads as a null result rather than as a bug. We c
 this explicitly before each campaign.
 
 \section{Repair operators}
+\label{sec:method}
 
 The central question is whether the usefulness of $\Delta r$ depends on the
 \emph{geometry} of the operator that produced it. Five operators are therefore used,
@@ -483,6 +491,117 @@ rate limit only & 0.20 & 480 & --- & -0.00980 & -0.00167 & 0.0393 \\
 The conjecture is therefore refuted on its own terms, and refuted in the direction
 opposite to the one predicted: target motion makes the component worse, not better.
 
+\section{A deployed closed loop, where the term does work}
+\label{sec:loop}
+
+Every result so far is negative. We now report the one environment in which the term
+demonstrably helps, because the contrast is the most informative part of this study and
+because a mechanism paper that reported only the negative half would be as selective as
+one reporting only the positive half.
+
+The environment is a rate-constrained set-point tracking loop: a controller proposes a
+six-dimensional bounded control each cycle, a rate limiter clips it to
+$\pm 0.10$ of range about the previously applied control, a two-dimensional plant with
+first-order lag responds, and the score is the distance of the plant state from a target
+integrated over fifteen cycles, at twenty evaluations per cycle, giving a 300-evaluation
+budget. The repair operator is therefore exactly the rate-limit geometry of
+Section~\ref{sec:method}, and the displacement is exactly the refused component of the
+requested control change. Each arm is run over 67{,}200 matched episodes across 21 stress
+profiles.
+
+\subsection{An isolated dose-response in $\beta$}
+
+The decisive measurement is a sweep of $\beta$ within one controller, holding every other
+term fixed. In this implementation the component block executes whenever repair guidance
+is enabled, irrespective of the value of $\beta$, so the $\beta = 0$ arm consumes the
+identical random stream: it is an exact zero-term baseline of the kind
+Section~\ref{sec:method} requires. Table~\ref{tab:dose} reports the result.
+
+\begin{table}[htbp]
+\centering
+\caption{Dose-response in $\beta$ on the closed loop, baseline stress condition, all other
+coefficients held fixed. The $\beta = 0$ row is the stream-identical zero-term baseline.}
+\label{tab:dose}
+\begin{tabular}{rrrr}
+\toprule
+$\beta$ & Distance AUC $\downarrow$ & Success $\uparrow$ & Repair rate \\
+\midrule
+0.00 & 0.421479 & 0.578438 & 0.876975 \\
+0.25 & 0.421147 & 0.573125 & 0.873916 \\
+0.50 & 0.417020 & 0.590313 & 0.879507 \\
+0.75 & 0.412328 & 0.592187 & 0.897020 \\
+0.90 & 0.409232 & 0.608437 & 0.921280 \\
+1.10 & 0.403673 & 0.638437 & 0.975349 \\
+1.50 & 0.397247 & 0.659062 & 0.999878 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Distance AUC decreases strictly monotonically across all seven levels and success rises
+with it, from $0.578$ at $\beta = 0$ to $0.659$ at $\beta = 1.50$, and the effect has not
+saturated at the largest value tested. Decomposing the gain of the deployed configuration
+over the bare host on this condition: the total improvement in AUC is $3.72\%$, of which
+$0.84\%$ is attributable to the other differences between the two arms and $2.91\%$ to
+$\beta$ alone, so the displacement term accounts for $78.1\%$ of the effect. On this
+environment the mechanism works, it works through the term under study, and the evidence
+is a dose-response rather than a single comparison.
+
+\subsection{What the ranking does and does not say}
+
+Table~\ref{tab:rank} gives the mean rank of twelve arms over the 21 profiles. The term
+improves every host it is attached to, in every profile. It does not, however, reorder the
+field: four of the six component-equipped arms still rank below the strongest bare host,
+and the relative gain is strongly inversely related to host quality (Spearman $+0.83$
+between a host's own AUC and the gain the term delivers on it). The correct reading is
+that the term improves its host, that it improves a weak host more than a strong one, and
+that host selection still dominates component selection.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Mean rank over 21 stress profiles, twelve arms. Lower is better.}
+\label{tab:rank}
+\begin{tabular}{lrlr}
+\toprule
+Arm & Mean rank & Arm & Mean rank \\
+\midrule
+creo\_gwo & 1.0000 & pso & 6.7619 \\
+creo\_dfo & 2.0476 & creo\_ga & 7.5714 \\
+gwo & 2.9524 & creo\_jso & 9.0000 \\
+creo\_pso & 4.0000 & jso & 10.0000 \\
+creo\_de & 5.1905 & ga & 11.0000 \\
+dfo & 6.4762 & de & 12.0000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{An unexplained dissociation}
+
+The term helps here and harms everywhere else in this paper, and we were unable to find
+the reason. We reproduced, one at a time and in combination, every structural feature of
+this loop we could identify: the rate-limit geometry and its exact limit magnitude, the
+300-evaluation budget, the six-dimensional bounded control space, a rank-deficient
+objective matching the loop's six-to-two map, the first-order plant lag, a moving target
+at four rates, and a plant initialised on the opposite side of its target so that each
+episode begins with a long rate-limited traverse. In none of these did the term become
+beneficial; the rank-deficient, rate-limited, lagged condition that most closely matches
+the loop is in fact the most harmful cell in the entire study (median benefit $-0.0153$,
+helped in $23.9\%$ of matched pairs).
+
+One structural difference remains, which we name but did not test. In the loop the rate
+limit is applied about a \emph{single} applied control that advances once per cycle, so the
+whole population is confined to one moving box and every individual's displacement is the
+refused part of a step from a \emph{shared} operating point. In our replications each
+individual is limited about its own predecessor, so the accumulated displacements point in
+as many directions as there are individuals. That difference turns $\Delta r$ from a
+per-individual quantity into a population-coherent one, and it is the candidate we would
+test next.
+
+Until that is settled, the honest summary is narrow: the term is a usable signal in at
+least one deployed rate-constrained tracking loop, it is harmful on static benchmark
+problems under five repair geometries, and the structural property that separates the two
+has not been identified.
+
 \section{Discussion}
 
 \paragraph{What is falsified.} The intuition motivating displacement reuse is that
@@ -506,22 +625,27 @@ any instance set that does not share that bias. We would suggest that any mechan
 displacement has a systematic direction in the search box should report a shifted-optimum
 control as a matter of course.
 
-\paragraph{What remains open.} Very little, for this mechanism. The three obvious
-defences have now been tested and have failed: that the displacement carries useful
-constraint geometry (falsified by the ellipsoid operator being the most harmful), that
-the reported benchmark benefit reflects repair guidance (explained instead by domain-centre
-bias), and that the mechanism belongs to tracking rather than to static search (refuted,
-with harm increasing as the target moves faster). We can no longer offer a mechanism by
-which reusing a repair displacement would help a population-based search, and we think
-the burden has shifted: a future report of benefit for this family of term should come
-with a shifted-optimum control and a moving-target arm, because without them the two most
-likely confounds remain unexcluded.
+\paragraph{What remains open.} The three defences of the mechanism \emph{as a
+constraint-geometry device} have been tested and have failed: that the displacement
+carries useful geometry (falsified by the ellipsoid operator being the most harmful), that
+the reported benchmark benefit reflects repair guidance (explained instead by
+domain-centre bias), and that it belongs to tracking rather than static search (refuted,
+with harm increasing as the target moves faster).
 
-This does not establish that no instance of the family can ever help. It establishes that
-across eight hosts, five repair geometries, two standard problem classes, four rates of
-target motion and roughly 95{,}000 matched runs, we found no setting in which it did, and
-that the two explanations previously offered for an observed benefit do not survive a
-direct test.
+What survives is harder and more interesting. Section~\ref{sec:loop} establishes, with a
+monotone dose-response against an exact zero-term baseline, that the term does real work
+in one deployed closed loop. Eight attempts to reproduce the conditions of that loop on
+standard problems all failed to make it beneficial. So we are left with a mechanism that
+is reliably harmful in every controlled setting we could construct and reliably helpful in
+the uncontrolled one it was designed for, and we cannot yet say why. We name the
+population-coherence of the displacement as the leading candidate: a rate limit about a
+single shared operating point makes every individual's $\Delta r$ a component of the same
+refused step, whereas a per-individual limit makes them point in unrelated directions.
+
+We therefore do not claim that no instance of this family can help. We claim that it does
+not help for the reasons usually given, that two of the benefits previously reported for it
+are confounded, and that the one benefit we can confirm is not reproduced by any
+controlled variation we attempted.
 
 \section{Threats to validity}
 
