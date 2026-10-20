@@ -57,9 +57,12 @@ centre.
 | radial shrinkage (CEC2017) |    30 | 1920 |                     0.070265 |                       -0.109061 |           0.368694 |              0.797396 | 2.51e-175 |
 
 Radial shrinkage, whose displacement always points at the domain centre, helps only in the
-`centred` variant and hurts in `translated`. Ellipsoid projection, the most geometrically
-informative operator in the battery, is the most harmful of the five, which falsifies the
-idea that the displacement helps in proportion to the geometry it carries.
+`centred` variant and hurts in `translated`. Information does not buy benefit: the null
+control, whose displacement is pure noise by construction, is the *least* harmful of the
+five (losing 37.5% of matched pairs), while the most informative operator, ellipsoid
+projection, loses the most (81.6%) and is the only one significantly harmful whether or
+not the optimum sits at the domain centre. By significantly-harmful cells the worst
+operator is radial shrinkage (38 of 96), not the ellipsoid (31).
 
 **3. On a deployed rate-constrained tracking loop the term does work.** Sweeping `beta`
 within one controller, all other coefficients fixed, with `beta = 0` an exact zero-term
