@@ -44,8 +44,10 @@ benchmark protocol, is a centre-seeking artefact: it helps when the optimum lies
 domain centre and hurts when the same landscape is translated away from it, with a median
 centre advantage of $+0.368$ in $\log_{10}$ gap ratio at $D=30$. Third, the natural
 explanation that a displacement helps in proportion to the geometric information it
-carries is falsified: the ellipsoid-projection operator, whose displacement is a true
-surface normal with $D$ degrees of freedom, is the most harmful of the five. Finally, a
+carries is falsified: the uninformative null control is the least harmful operator of the
+five, while the ellipsoid projection, whose displacement is a true surface normal with $D$
+degrees of freedom, loses the largest share of matched pairs and is the only operator
+significantly harmful whether or not the optimum sits at the domain centre. Finally, a
 third campaign of 19{,}200 runs tests the remaining conjecture, that the mechanism belongs
 to tracking rather than to static search, by letting the optimum drift at four rates with
 the static case retained as an internal control; the conjecture is refuted in the
@@ -383,8 +385,7 @@ eps-constrained DE & 3 & 11 & 404 & 1060 \\
 Two observations bear on the mechanism. The null operator, whose displacement is a fresh
 uniform sample and therefore carries no guidance at all, is not the worst of the five: it
 is better than radial shrinkage and ellipsoid projection on significant-cell counts and
-has by far the most ties. And the ellipsoid operator, the most geometrically informative,
-fires on $99.7\%$ of candidates and is the most harmful. Firing frequency does not
+has by far the most ties. And the ellipsoid operator, the most geometrically informative, fires on $99.7\%$ of candidates and loses the largest share of matched pairs, $81.6\%$. Firing frequency does not
 explain the ordering either: the rate-limit operator fires on $72.1\%$ of candidates and
 is the mildest.
 
@@ -676,12 +677,15 @@ has not been identified.
 \paragraph{What is falsified.} The intuition motivating displacement reuse is that
 $\Delta r$ carries directional information about the admissible region. If that were the
 operative mechanism, benefit should increase with the information content of the
-displacement. It does not. Ordering the operators by degrees of freedom in their
-displacement gives radial shrinkage (one, a magnitude), box projection (axis-aligned,
-sparse), and ellipsoid projection ($D$, a true surface normal); the ranking by harm runs
-in the opposite direction to the ranking by information. A null operator whose
-displacement is pure noise outperforms two of the three informative ones. Whatever the
-term is doing, it is not conveying constraint geometry to the search.
+displacement. It does not. The ordering is not a clean reversal, and we do not claim one: by
+significantly-harmful cells the single-degree-of-freedom radial shrinkage is worst, while
+by share of matched pairs lost the $D$-degree-of-freedom ellipsoid projection is. What the
+data do show is that information does not buy benefit. The null operator, whose
+displacement is pure noise by construction, is the \emph{least} harmful of the five on
+both measures, losing $37.5\%$ of pairs against the ellipsoid's $81.6\%$; and the
+ellipsoid is the only operator significantly harmful in both variants of the
+shifted-optimum control. Whatever the term is doing, it is not conveying constraint
+geometry to the search.
 
 \paragraph{What the benchmark result was.} Where a benefit for a radial-shrinkage-style
 operator has been reported on a standard suite, the shifted-optimum control explains it
@@ -720,7 +724,7 @@ controlled variation we attempted.
 
 The coefficient $\beta$ is fixed at $0.90$ and untuned; a tuned coefficient might reduce
 the harm, though it is hard to see how tuning recovers a benefit from a term whose
-informative variant is the most harmful. A single evaluation budget is used, and the
+uninformative variant is the least harmful of the five. A single evaluation budget is used, and the
 dimensional trend visible in the shifted-optimum control suggests budget and dimension
 interact. The predecessor mapping required by the rate-limit operator is a design choice,
 and the CMA-ES mapping in particular is an analogy; a different mapping might change that
