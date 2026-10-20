@@ -1,0 +1,118 @@
+\section{Method}
+\label{sec:method}
+
+\subsection{The component}
+
+Let a host algorithm propose, for individual $i$ at iteration $t$, a candidate
+$\tilde{x}_i^{(t)}$ by its own update rule. The component studied here adds
+exactly one term:
+%
+\begin{equation}
+  x_i^{(t)} \;=\; \underbrace{\mathcal{U}_{\text{host}}\!\left(\cdot\right)}_{\text{unmodified host update}}
+  \;+\; \beta\,\Delta r_i^{(t-1)},
+  \label{eq:component}
+\end{equation}
+%
+where $\Delta r_i^{(t-1)} = x^{\text{used}} - x^{\text{stored}}$ is the displacement
+the repair operator applied to that individual at its most recent evaluation, and
+$\beta$ is a scalar coefficient. For DE/rand/1/bin the full rule is
+$x_i = x_{r_1} + F(x_{r_2}-x_{r_3}) + \beta\,\Delta r_i$, which differs from the
+canonical rule by the final term alone.
+
+Two properties make the comparison an ablation rather than a comparison of
+algorithms. First, the term is additive and consumes no random numbers, so at
+$\beta=0$ the arm is not merely similar to the unmodified host but
+\emph{stream-identical} to it; this is asserted for all eight hosts by a test
+that forces $\Delta r \equiv 0$. Second, the repair operator is a property of the
+environment and is applied identically in both arms, so a matched pair differs by
+the value of $\beta$ and by nothing else.
+
+\subsection{Repair operators}
+
+The central question is whether the usefulness of $\Delta r$ depends on the
+\emph{geometry} of the repair operator rather than on how often it fires. Five
+operators are therefore used, spanning distinct displacement geometries, each
+parameterised on the search box $[\text{lo},\text{hi}]^D$:
+
+\begin{enumerate}
+  \item \textbf{Radial shrinkage} (the CEC2017 operator): contracts the candidate
+        towards the domain centre by a factor $0.80$, for at most $10$ passes,
+        outside a soft region at $0.8$ of the half-width with a mean-absolute-value
+        cap at $0.6$. Its displacement has one degree of freedom, magnitude, and
+        always points at the centre.
+  \item \textbf{Box projection}: componentwise projection onto a soft box at $0.8$
+        of the half-width. The displacement is axis-aligned and carries only the
+        identity of the violated coordinates.
+  \item \textbf{Ellipsoid projection}: projection onto a randomly oriented
+        ellipsoid with centre offset $0.3$ and semi-axes drawn in $[0.2,0.6]$ of
+        the half-width, fixed per problem so that the geometry is part of the
+        problem rather than part of the run. Its displacement is a true surface
+        normal and carries $D$ degrees of freedom.
+  \item \textbf{Rate limit} (the E06 operator): bounds each coordinate's change
+        from the individual's predecessor to $h = 0.10$ of the range, so the
+        displacement is exactly the component of the requested step the limiter
+        refused.
+  \item \textbf{Random resample} (null control): replaces a violating candidate
+        with a fresh uniform sample, so the displacement is uninformative by
+        construction and any apparent benefit is attributable to perturbation
+        magnitude alone.
+\end{enumerate}
+
+The rate limit requires a predecessor. We use the incumbent each candidate is
+generated from: the target vector $x_i$ for the three DE variants, L-SHADE, GWO
+and $\varepsilon$-constrained DE, the child's own parent for the GA, the particle's
+current position for SPSO-2011, and the distribution mean $m$ for CMA-ES, which
+has no per-individual predecessor. The initial population is left unrepaired,
+since sampling has no predecessor. We note the CMA-ES mapping is an analogy
+rather than a true predecessor.
+
+\subsection{Hosts}
+
+Eight hosts span genuine algorithmic-component space rather than the metaphor
+literature: DE/rand/1/bin ($N=50$, $F=0.7$, $CR=0.9$); DE/current-to-$p$best/1
+(as above, $p=0.1$); L-SHADE ($N_{\text{init}}=18D$ with linear reduction to $4$,
+$H=6$, $p=0.11$); SPSO-2011 ($N=40$, $w=0.721$, $c_1=c_2=1.193$); a real-coded GA
+with SBX and polynomial mutation ($N=50$, $\eta_c=\eta_m=20$, $p_m=1/D$); GWO
+($N=40$); $\varepsilon$-constrained DE ($N=50$, control horizon $0.2$ of budget,
+$cp=5$); and CMA-ES via the reference implementation with IPOP-style restarts and
+$\sigma_0 = 0.3\,\overline{(\text{hi}-\text{lo})}$. GWO is included because it is
+the strongest host on the closed-loop task, with explicit acknowledgement that its
+update is a documented reiteration of particle-swarm ideas, not as a novel
+algorithm. Selection is feasibility-aware (Deb's rules) in every host.
+
+\subsection{Campaigns}
+
+$\beta$ is held at $0.90$, the value pre-specified in earlier work, and is
+\emph{not} tuned here; the evaluation budget is $2\times10^4$ function evaluations
+throughout.
+
+\textbf{Constrained suite.} Eight hosts $\times$ five operators $\times$ twelve
+nonlinearly constrained problems (G1, G2, G4, G7, G9, G10, G16, G18, G19, G24,
+plus the pressure-vessel and cantilevered-beam design problems) $\times$ 31 paired
+seeds $\times$ two arms, giving 29{,}760 runs. The repair operator acts on the
+search domain; the problems' own constraints are handled by feasibility-aware
+selection in both arms identically.
+
+\textbf{Shifted-optimum control.} The decisive test of the centre-pull confound.
+Each of the 24 BBOB functions, at instances 1--5 and $D \in \{10,30\}$, is run in
+two variants differing only in where the optimum sits: \emph{translated},
+$f(x)$, with the optimum away from the domain centre, and \emph{centred},
+$f(x+x^{\star})$, the same landscape with the optimum at the origin, which is the
+domain centre. Three operators $\times$ two seeds $\times$ two arms gives 46{,}080
+runs. An operator whose displacement points at the domain centre must help in the
+centred variant and not in the translated one; if it does, a benefit reported on a
+centre-biased suite is a centre-seeking artefact rather than repair guidance.
+
+\subsection{Statistics}
+
+Arms are paired exactly on host, operator, problem, dimension and seed. On the
+constrained suite, runs are ordered by the feasibility-aware key (feasible before
+infeasible, then violation, then objective), matching the selection rule used
+inside the hosts; the objective is compared by Wilcoxon signed-rank over seeds
+within each host $\times$ operator $\times$ problem cell, restricted to runs
+feasible in both arms, and cells with fewer than six such pairs are reported as
+untested rather than dropped. On the shifted-optimum control the paired quantity
+is $\log_{10}$ of the ratio of optimality gaps, and the confound is tested
+directly by comparing the centred and translated improvements for the same
+landscape, which are themselves a matched pair. All $p$-values are Holm-corrected
+within their family.
