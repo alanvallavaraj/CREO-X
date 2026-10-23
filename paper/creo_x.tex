@@ -109,8 +109,8 @@ literature under various names.
 
 We test the idea directly, and the answer is negative in a way that is more informative
 than a simple absence of effect. The mechanism is not merely neutral; it is harmful, and
-the one setting in which a benefit has been reported for an operator of this family turns
-out to be explained by a property of the benchmark rather than by the mechanism.
+the one configuration in which it does improve on a standard suite turns out to be
+explained by a property of the benchmark rather than by the mechanism.
 
 \paragraph{Contributions.}
 \begin{enumerate}
@@ -154,10 +154,7 @@ reader can diff the two in one line.
 We name this term CREO, for \emph{Continuous Repair Evolutionary Optimiser}, so that it
 can be cited and built on. The name denotes the term in Equation~\ref{eq:component} and
 nothing else: it is not an algorithm, and a host carrying it is a \emph{configuration} of
-that host rather than a new method. Earlier work by the author used the expansion
-``Repair-Guided Evolutionary Optimisation'' for the same term; the present expansion is
-adopted here because it matches the acronym, and the two refer to the identical
-mechanism. We write ``DE with
+that host rather than a new method. We write ``DE with
 CREO'' or ``$\beta > 0$'' in preference to constructions such as ``CREO-DE'', because a
 roster of hyphenated names implies a family of algorithms where there is one coefficient.
 
@@ -728,9 +725,9 @@ ellipsoid is the only operator significantly harmful in both variants of the
 shifted-optimum control. Whatever the term is doing, it is not conveying constraint
 geometry to the search.
 
-\paragraph{What the benchmark result was.} Where a benefit for a radial-shrinkage-style
-operator has been reported on a standard suite, the shifted-optimum control explains it
-without reference to repair at all. The displacement points at the domain centre; on a
+\paragraph{What the benchmark result was.} The one place the term does help on a standard
+suite is the radial-shrinkage geometry with the optimum at the domain centre, and the
+shifted-optimum control explains that without reference to repair at all. The displacement points at the domain centre; on a
 suite whose optima are disproportionately near the centre, a centre pull is a free gain,
 and the same pull is a penalty once the optimum is moved. This stacks with the known
 centre-bias of several widely used benchmark suites~\citep{kudela2022}: a mechanism that
@@ -757,9 +754,9 @@ single shared operating point makes every individual's $\Delta r$ a component of
 refused step, whereas a per-individual limit makes them point in unrelated directions.
 
 We therefore do not claim that no instance of this family can help. We claim that it does
-not help for the reasons usually given, that two of the benefits previously reported for it
-are confounded, and that the one benefit we can confirm is not reproduced by any
-controlled variation we attempted.
+not help for the reasons usually given, that the one gain it shows on a standard suite is
+an artefact of where that suite places its optima rather than of repair guidance, and that
+the one benefit we can confirm is not reproduced by any controlled variation we attempted.
 
 \section{Threats to validity}
 
