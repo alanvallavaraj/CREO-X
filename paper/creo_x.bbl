@@ -1,0 +1,115 @@
+\begin{thebibliography}{14}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Blank and Deb(2020)]{blank2020}
+Julian Blank and Kalyanmoy Deb.
+\newblock pymoo: Multi-objective optimization in python.
+\newblock \emph{IEEE Access}, 8:\penalty0 89497--89509, 2020.
+\newblock \doi{10.1109/ACCESS.2020.2990567}.
+
+\bibitem[Camacho-Villal\'{o}n et~al.(2022)Camacho-Villal\'{o}n, Dorigo, and
+  St\"{u}tzle]{camacho2022}
+Christian~Leonardo Camacho-Villal\'{o}n, Marco Dorigo, and Thomas St\"{u}tzle.
+\newblock Exposing the grey wolf, moth-flame, whale, firefly, bat, and antlion
+  algorithms: six misleading optimization techniques inspired by bestial
+  metaphors.
+\newblock \emph{International Transactions in Operational Research},
+  30\penalty0 (6):\penalty0 2945--2971, 2022.
+\newblock \doi{10.1111/itor.13176}.
+
+\bibitem[de~Nobel et~al.(2023)de~Nobel, Ye, Vermetten, Wang, Doerr, and
+  B\"{a}ck]{denobel2023}
+Jacob de~Nobel, Furong Ye, Diederick Vermetten, Hao Wang, Carola Doerr, and
+  Thomas B\"{a}ck.
+\newblock {IOHexperimenter}: Benchmarking platform for iterative optimization
+  heuristics.
+\newblock \emph{Evolutionary Computation}, 32\penalty0 (3):\penalty0 205--210,
+  2023.
+\newblock \doi{10.1162/evco_a_00342}.
+
+\bibitem[Deb(2000)]{deb2000}
+Kalyanmoy Deb.
+\newblock An efficient constraint handling method for genetic algorithms.
+\newblock \emph{Computer Methods in Applied Mechanics and Engineering},
+  186\penalty0 (2--4):\penalty0 311--338, 2000.
+\newblock \doi{10.1016/S0045-7825(99)00389-8}.
+
+\bibitem[Hansen and Ostermeier(2001)]{hansen2001}
+Nikolaus Hansen and Andreas Ostermeier.
+\newblock Completely derandomized self-adaptation in evolution strategies.
+\newblock \emph{Evolutionary Computation}, 9\penalty0 (2):\penalty0 159--195,
+  2001.
+\newblock \doi{10.1162/106365601750190398}.
+
+\bibitem[Hansen et~al.(2021)Hansen, Auger, Ros, Mersmann, Tu\v{s}ar, and
+  Brockhoff]{hansen2021}
+Nikolaus Hansen, Anne Auger, Raymond Ros, Olaf Mersmann, Tea Tu\v{s}ar, and
+  Dimo Brockhoff.
+\newblock {COCO}: a platform for comparing continuous optimizers in a black-box
+  setting.
+\newblock \emph{Optimization Methods and Software}, 36\penalty0 (1):\penalty0
+  114--144, 2021.
+\newblock \doi{10.1080/10556788.2020.1808977}.
+
+\bibitem[Holm(1979)]{holm1979}
+Sture Holm.
+\newblock A simple sequentially rejective multiple test procedure.
+\newblock \emph{Scandinavian Journal of Statistics}, 6\penalty0 (2):\penalty0
+  65--70, 1979.
+
+\bibitem[K\r{u}dela(2022)]{kudela2022}
+Jakub K\r{u}dela.
+\newblock A critical problem in benchmarking and analysis of evolutionary
+  computation methods.
+\newblock \emph{Nature Machine Intelligence}, 4:\penalty0 1238--1245, 2022.
+\newblock \doi{10.1038/s42256-022-00579-0}.
+
+\bibitem[Mirjalili et~al.(2014)Mirjalili, Mirjalili, and Lewis]{mirjalili2014}
+Seyedali Mirjalili, Seyed~Mohammad Mirjalili, and Andrew Lewis.
+\newblock Grey wolf optimizer.
+\newblock \emph{Advances in Engineering Software}, 69:\penalty0 46--61, 2014.
+\newblock \doi{10.1016/j.advengsoft.2013.12.007}.
+
+\bibitem[S\"{o}rensen(2015)]{sorensen2015}
+Kenneth S\"{o}rensen.
+\newblock Metaheuristics---the metaphor exposed.
+\newblock \emph{International Transactions in Operational Research},
+  22\penalty0 (1):\penalty0 3--18, 2015.
+\newblock \doi{10.1111/itor.12001}.
+
+\bibitem[Storn and Price(1997)]{storn1997}
+Rainer Storn and Kenneth Price.
+\newblock Differential evolution -- a simple and efficient heuristic for global
+  optimization over continuous spaces.
+\newblock \emph{Journal of Global Optimization}, 11\penalty0 (4):\penalty0
+  341--359, 1997.
+\newblock \doi{10.1023/A:1008202821328}.
+
+\bibitem[Takahama and Sakai(2009)]{takahama2009}
+Tetsuyuki Takahama and Setsuko Sakai.
+\newblock Efficient constrained optimization by the $\varepsilon$ constrained
+  differential evolution using an approximation model.
+\newblock \emph{Transactions of the Japanese Society for Artificial
+  Intelligence}, 24\penalty0 (1):\penalty0 34--45, 2009.
+\newblock \doi{10.1527/tjsai.24.34}.
+
+\bibitem[Tanabe and Fukunaga(2014)]{tanabe2014}
+Ryoji Tanabe and Alex~S. Fukunaga.
+\newblock Improving the search performance of {SHADE} using linear population
+  size reduction.
+\newblock In \emph{IEEE Congress on Evolutionary Computation (CEC)}, 2014.
+\newblock \doi{10.1109/CEC.2014.6900380}.
+
+\bibitem[Zambrano-Bigiarini et~al.(2013)Zambrano-Bigiarini, Clerc, and
+  Rojas]{zambrano2013}
+Mauricio Zambrano-Bigiarini, Maurice Clerc, and Rodrigo Rojas.
+\newblock Standard particle swarm optimisation 2011 at {CEC}-2013: A baseline
+  for future {PSO} improvements.
+\newblock In \emph{IEEE Congress on Evolutionary Computation (CEC)}, 2013.
+\newblock \doi{10.1109/CEC.2013.6557848}.
+
+\end{thebibliography}
