@@ -39,8 +39,12 @@ set-point tracking loop the term is a usable control signal: holding the remaini
 coefficients fixed, a sweep of $\beta$ against the stream-identical zero-term baseline
 produces a dose-response strictly monotone in distance AUC, improving by $2.906\%$ at the
 deployed $\beta=0.90$ and by $5.749\%$ at $\beta=1.50$, with $\beta$ alone accounting for
-$78\%$ of the configuration's advantage over its bare host. The effect is not peculiar to
-one host: every one of the six hosts tested improves, over $67{,}200$ matched pairs each,
+$78\%$ of the configuration's advantage over its bare host. The dose-response replicates in
+a second deployed loop, under a different plant lag, landscape family and target set and
+with the term attached to a different host: over $224{,}000$ episodes and $32{,}000$ exactly
+matched tuples per level, distance AUC and success are both strictly monotone in $\beta$,
+and at $\beta=0.90$ the term improves tracking in $91.2\%$ of matched episodes for a
+$15.8\%$ reduction in AUC. The effect is not peculiar to one host: every one of the six hosts tested improves, over $67{,}200$ matched pairs each,
 with relative gains from $3.136\%$ to $21.306\%$ and Holm-corrected $p$ below
 double-precision resolution throughout, and the strongest configuration attains a mean
 rank of $1.000$ across twenty-one stress profiles, placing first in every one. The gain is
@@ -72,8 +76,8 @@ rates refutes the tracking conjecture in the direction opposite to the one predi
 term becoming more harmful as the target moves faster. One quantitative signal does
 survive and points at a mechanism: across the $\beta$ sweep the benefit tracks repair
 saturation almost exactly, at Spearman $-0.964$ between distance AUC and repair rate
-($p = 4.5 \times 10^{-4}$), so whatever the term supplies is delivered in proportion to how
-often the rate limit engages. We report that regularity without committing to a direction
+($p = 4.5 \times 10^{-4}$) in the first loop and $-1.000$ in the second, so whatever the term
+supplies is delivered in proportion to how often the rate limit engages. We report that regularity without committing to a direction
 of action: establishing one requires fixing the sign convention of the applied
 displacement in the deployed controller, which we have not done.
 
@@ -621,7 +625,8 @@ is a dose-response rather than a single comparison.
 mechanism. The fraction of evaluations on which the rate limit actually fires rises
 monotonically with $\beta$, from $0.8770$ at $\beta = 0$ to $0.9999$ at $\beta = 1.50$, and
 across the seven levels distance AUC and that firing rate are almost perfectly
-anti-correlated (Spearman $-0.964$, $p = 4.5 \times 10^{-4}$, $n = 7$). The component is
+anti-correlated (Spearman $-0.964$, $p = 4.5 \times 10^{-4}$, $n = 7$; the same coupling is
+$-1.000$ in the second loop of Section~\ref{sec:loop2}). The component is
 therefore not simply improving the loop; it is improving it in lockstep with how often the
 rate limit engages. We record the regularity and stop short of a mechanism. Two readings
 are available and they point in opposite directions: $\Delta r$ as defined is the
@@ -664,6 +669,59 @@ dfo & 6.4762 & de & 12.0000 \\
 \end{tabular}
 \end{table}
 
+\subsection{A second loop}
+\label{sec:loop2}
+
+The dose-response of Section~\ref{sec:loop} comes from a single environment, so we repeated
+it in a second deployed loop. The two are not independent implementations: the second
+shares the controller code and the plant module with the first, so it is a second
+\emph{task configuration} rather than a reimplementation. It differs in plant lag
+($\kappa = 0.35$), in landscape family, carrying four landscapes including a multimodal and
+a saturating response rather than one, in target set, with eight set points rather than
+one, in drawing empirical decoder, mapping and generator residuals from measured upstream
+error pools rather than synthetic noise, and in the host the term is attached to, which
+here is DE rather than GWO. The design is otherwise the one already defended: every
+coefficient other than $\beta$ is held fixed, and the paired seed is a function of
+landscape, target, repeat and provider but not of $\beta$, so each level sees an exactly
+matched episode.
+
+Table~\ref{tab:loop2} reports $224{,}000$ episodes, $32{,}000$ exactly matched tuples at each
+of seven levels. Distance AUC falls strictly monotonically and success rises strictly
+monotonically across the whole range. At the deployed $\beta = 0.90$ the term improves
+tracking in $91.2\%$ of matched episodes for a $15.8\%$ reduction in distance AUC, against
+$2.9\%$ in the first loop, and as before the effect has not saturated at the largest value
+tested.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Second loop, $224{,}000$ episodes, $32{,}000$ exactly matched tuples per level. All
+coefficients other than $\beta$ are held fixed. Gain and matched-pair fraction are against
+the $\beta = 0$ arm; Wilcoxon signed-rank, one-sided, Holm-corrected, with every corrected
+$p$ below double-precision resolution.}
+\label{tab:loop2}
+\begin{tabular}{lrrrrrr}
+\toprule
+$\beta$ & AUC $\downarrow$ & success $\uparrow$ & repair rate & gain (\%) & frac.\ better & $p_{\text{Holm}}$ \\
+\midrule
+0.00 & 0.5762 & 0.1141 & 0.9192 & --- & --- & --- \\
+0.25 & 0.5521 & 0.1447 & 0.9307 & 4.18 & 0.708 & $<10^{-300}$ \\
+0.50 & 0.5259 & 0.1782 & 0.9497 & 8.74 & 0.809 & $<10^{-300}$ \\
+0.75 & 0.4979 & 0.2170 & 0.9701 & 13.59 & 0.887 & $<10^{-300}$ \\
+0.90 & 0.4851 & 0.2345 & 0.9818 & 15.81 & 0.912 & $<10^{-300}$ \\
+1.10 & 0.4703 & 0.2681 & 0.9944 & 18.38 & 0.938 & $<10^{-300}$ \\
+1.50 & 0.4547 & 0.2942 & 0.9997 & 21.09 & 0.959 & $<10^{-300}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The replication also settles something the first loop could only suggest. The co-variation
+between benefit and repair saturation, which rested on seven points of one sweep at
+Spearman $-0.964$, is here $-1.000$: the ordering of distance AUC across the seven levels is
+the exact reverse of the ordering of the rate at which the limiter fires. Two environments
+and two hosts now show the same coupling, which moves the saturation account from a
+single-sample curiosity to the leading description of what the term does.
+
 \subsection{An unexplained dissociation}
 
 The term helps here and harms everywhere else in this paper, and we were unable to find
@@ -701,9 +759,12 @@ per-individual quantity into a population-coherent one, and it is the candidate 
 test next.
 
 Two candidate explanations therefore stand, and they are not exclusive: population
-coherence, described above, and the saturation account of
-Section~\ref{sec:loop}, under which the term works by driving the control against its rate
-limit rather than by indicating a direction. Neither is settled, and until one of them is, the honest summary is bounded: the term is a usable
+coherence, described above, and the saturation account, under which the term works by
+driving the control against its rate limit rather than by indicating a direction. The
+saturation account is now the better supported of the two, since the coupling between
+benefit and limiter firing reproduces across both loops and both hosts, at Spearman
+$-0.964$ and $-1.000$. It is still a correlation rather than a mechanism, and until the
+direction of action is settled, the honest summary is bounded: the term is a usable
 signal in at least one deployed rate-constrained tracking loop, where its effect is
 isolated by a monotone dose-response against a stream-identical baseline; it does not
 transfer to static benchmark problems under any of five repair geometries; and the
@@ -774,13 +835,15 @@ the problems where feasibility was attainable within budget rather than to the s
 whole. Finally, seven of the eight hosts reproduce their repair fire rates bit-identically
 across the two platforms we ran on, but CMA-ES does not, because the reference
 implementation differs in version; that arm should be reproduced only against a pinned
-version. The closed-loop result carries a separate caveat: the benefit reported in
-Section~\ref{sec:loop} has been established within the deployed system and its dose-response
-is internal to it, but we have not reproduced that benefit in a harness rebuilt from the
-loop's stated parameters alone. Those parameters therefore do not appear to be sufficient
-to specify the regime, which is consistent with the dissociation remaining unexplained and
-is a reason to treat the single-environment scope of that result as a real limitation
-rather than a formality.
+version. The closed-loop result carries a separate caveat. The dose-response holds in two
+deployed loops, but those two share their controller implementation and plant module, so
+they are two task configurations rather than two independent systems; and a harness we
+rebuilt from the loops' stated parameters alone did not reproduce the benefit at all. Those
+parameters therefore do not appear sufficient to specify the regime. What the replication
+establishes is that the effect survives changes of plant lag, landscape family, target set,
+upstream noise source and host; what it does not establish is that the effect survives a
+different implementation of the loop itself, and that remains the most important open
+check on the positive result.
 
 \section{Reproducibility}
 
