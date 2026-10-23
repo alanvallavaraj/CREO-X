@@ -57,7 +57,7 @@ its optimum sits at the domain centre, shows that the apparent benefit of the
 radial-shrinkage operator, the geometry used by a widely adopted benchmark protocol, is a
 centre-seeking artefact: it helps when the optimum lies at the domain centre and hurts
 when the same landscape is translated away from it, with a median centre advantage of
-$+0.368$ in $\log_{10}$ gap ratio at $D=30$. The natural explanation that a displacement
+$+0.369$ in $\log_{10}$ gap ratio at $D=30$. The natural explanation that a displacement
 helps in proportion to the geometric information it carries is falsified alongside it: the
 uninformative null control is the least harmful operator of the five, while the ellipsoid
 projection, whose displacement is a true surface normal with $D$ degrees of freedom, loses
@@ -356,7 +356,7 @@ box projection & 6 & 17 & 44 & 29 & 900 & 454 & 1622 \\
 ellipsoid projection & 5 & 31 & 13 & 47 & 519 & 30 & 2427 \\
 radial shrinkage (CEC2017) & 3 & 38 & 31 & 24 & 560 & 78 & 2338 \\
 random resample (null) & 4 & 14 & 40 & 38 & 656 & 1205 & 1115 \\
-rate limit (E06) & 0 & 14 & 61 & 21 & 970 & 218 & 1788 \\
+rate limit & 0 & 14 & 61 & 21 & 970 & 218 & 1788 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -403,7 +403,7 @@ uniform sample and therefore carries no guidance at all, is not the worst of the
 is better than radial shrinkage and ellipsoid projection on significant-cell counts and
 has by far the most ties. And the ellipsoid operator, the most geometrically informative, fires on $99.7\%$ of candidates and loses the largest share of matched pairs, $81.6\%$. Firing frequency does not
 explain the ordering either: the rate-limit operator fires on $72.1\%$ of candidates and
-is the mildest.
+leaves the largest number of cells statistically indistinguishable, 61 of 96.
 
 \subsection{The centre-pull confound, measured}
 
@@ -719,10 +719,10 @@ displacement. It does not. The ordering is not a clean reversal, and we do not c
 significantly-harmful cells the single-degree-of-freedom radial shrinkage is worst, while
 by share of matched pairs lost the $D$-degree-of-freedom ellipsoid projection is. What the
 data do show is that information does not buy benefit. The null operator, whose
-displacement is pure noise by construction, is the \emph{least} harmful of the five on
-both measures, losing $37.5\%$ of pairs against the ellipsoid's $81.6\%$; and the
-ellipsoid is the only operator significantly harmful in both variants of the
-shifted-optimum control. Whatever the term is doing, it is not conveying constraint
+displacement is pure noise by construction, is the \emph{least} harmful of the five by
+share of matched pairs lost, $37.5\%$ against the ellipsoid's $81.6\%$, and is joint-lowest
+on significantly-harmful cells at 14 of 96 alongside the rate limit; and the ellipsoid is
+the only operator significantly harmful in both variants of the shifted-optimum control. Whatever the term is doing, it is not conveying constraint
 geometry to the search.
 
 \paragraph{What the benchmark result was.} The one place the term does help on a standard
@@ -766,7 +766,8 @@ uninformative variant is the least harmful of the five. A single evaluation budg
 dimensional trend visible in the shifted-optimum control suggests budget and dimension
 interact. The predecessor mapping required by the rate-limit operator is a design choice,
 and the CMA-ES mapping in particular is an analogy; a different mapping might change that
-operator's behaviour, although it is already the mildest of the five. A substantial
+operator's behaviour, although it already leaves more cells statistically
+indistinguishable than any other operator. A substantial
 number of constrained cells are untested because too few seed pairs were feasible in both
 arms, between 21 and 47 of 96 depending on operator, so the constrained result speaks to
 the problems where feasibility was attainable within budget rather than to the suite as a
