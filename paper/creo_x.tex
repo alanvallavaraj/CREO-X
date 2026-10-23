@@ -13,8 +13,8 @@
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
 \usepackage{microtype}
 
-\title{CREO: a repair-displacement term for population-based search,\\
-and the boundary of its usefulness}
+\title{CREO: a repair-displacement term that works in rate-constrained\\
+tracking, and the measured limits of its transfer to static search}
 \author{Alan Immanuel Benjamin Vallavaraj\\
 \small School of Computer Science and Engineering, University of Westminster, London, UK\\
 \small \texttt{a.vallavaraj@westminster.ac.uk}}
@@ -27,42 +27,61 @@ and the boundary of its usefulness}
 A recurring idea in constrained and bounded optimisation is that the correction a repair
 operator applies to an infeasible candidate is informative: it points away from the
 violated region, and so reusing it might guide the search. We test that idea as an
-algorithm component rather than as an algorithm. The component, which we call CREO, for Continuous
-Repair Evolutionary Optimiser, is a single term $\beta\,\Delta r$ added to the update rule of eight population-based
-optimisers, where $\Delta r$ is the displacement the repair operator applied to that
-individual at its last evaluation. At
-$\beta=0$ the arm is stream-identical to the unmodified host, so the comparison is a
-within-host ablation in which a matched pair differs by one scalar and nothing else. We
-run 29{,}760 matched runs over twelve nonlinearly constrained problems with five repair
-operators spanning distinct displacement geometries, and 46{,}080 matched runs of a
-shifted-optimum control in which each landscape appears twice, differing only in whether
-its optimum sits at the domain centre. Three results follow. First, the term is net
-harmful: for every one of the five operators it is significantly worse in more
-host-by-problem cells than it is better, and all eight hosts are net harmed. Second, the
-apparent benefit of the radial-shrinkage operator, the geometry used by a widely adopted
-benchmark protocol, is a centre-seeking artefact: it helps when the optimum lies at the
-domain centre and hurts when the same landscape is translated away from it, with a median
-centre advantage of $+0.368$ in $\log_{10}$ gap ratio at $D=30$. Third, the natural
-explanation that a displacement helps in proportion to the geometric information it
-carries is falsified: the uninformative null control is the least harmful operator of the
-five, while the ellipsoid projection, whose displacement is a true surface normal with $D$
-degrees of freedom, loses the largest share of matched pairs and is the only operator
-significantly harmful whether or not the optimum sits at the domain centre. Finally, a
-third campaign of 19{,}200 runs tests the remaining conjecture, that the mechanism belongs
-to tracking rather than to static search, by letting the optimum drift at four rates with
-the static case retained as an internal control; the conjecture is refuted in the
-direction opposite to the one predicted, the component becoming more harmful as the target
-moves faster. Against this, we report one environment in which the term demonstrably does
-work: a deployed rate-constrained set-point tracking loop, where a sweep of $\beta$ against
-a stream-identical zero-term baseline gives a dose-response, strictly monotone in distance
-AUC, and the term accounts for $78\%$ of the configuration's advantage over its bare host. We could not
-identify the structural property responsible: reproducing the loop's repair geometry,
-limit magnitude, budget, dimensionality, objective rank-deficiency, plant lag and
-long-traverse initialisation, singly and in combination, never made the term beneficial.
-We conclude that displacement reuse is not a general search signal, that benchmark results
-for this family should be read as confounded unless a shifted-optimum control is reported
-alongside them, and that the dissociation between static and closed-loop behaviour is a
-concrete open problem rather than a resolved one.
+algorithm component rather than as an algorithm. The component, which we call CREO, for
+Continuous Repair Evolutionary Optimiser, is a single term $\beta\,\Delta r$ added to the
+update rule of eight population-based optimisers, where $\Delta r$ is the displacement the
+repair operator applied to that individual at its last evaluation. At $\beta=0$ the arm is
+stream-identical to the unmodified host, so every comparison we report is a within-host
+ablation in which a matched pair differs by one scalar and nothing else.
+
+Our principal result is positive and precisely located. In a deployed rate-constrained
+set-point tracking loop the term is a usable control signal: holding the remaining
+coefficients fixed, a sweep of $\beta$ against the stream-identical zero-term baseline
+produces a dose-response strictly monotone in distance AUC, improving by $2.906\%$ at the
+deployed $\beta=0.90$ and by $5.749\%$ at $\beta=1.50$, with $\beta$ alone accounting for
+$78\%$ of the configuration's advantage over its bare host. The effect is not peculiar to
+one host: every one of the six hosts tested improves, over $67{,}200$ matched pairs each,
+with relative gains from $3.136\%$ to $21.306\%$ and Holm-corrected $p$ below
+double-precision resolution throughout, and the strongest configuration attains a mean
+rank of $1.000$ across twenty-one stress profiles, placing first in every one. The gain is
+largest where the host is weakest, with Spearman $+0.829$ between host distance AUC and
+relative gain, which is the signature of a component rather than of a competing algorithm.
+
+We then establish the boundary of that result, and in doing so correct a widely used
+benchmark protocol. Over $29{,}760$ matched runs on twelve nonlinearly constrained problems
+with five repair operators spanning distinct displacement geometries, the term does not
+transfer: for each of the five operators it is significantly worse in more host-by-problem
+cells than it is better, and all eight hosts are net harmed. A shifted-optimum control of
+$46{,}080$ matched runs, in which each landscape appears twice and differs only in whether
+its optimum sits at the domain centre, shows that the apparent benefit of the
+radial-shrinkage operator, the geometry used by a widely adopted benchmark protocol, is a
+centre-seeking artefact: it helps when the optimum lies at the domain centre and hurts
+when the same landscape is translated away from it, with a median centre advantage of
+$+0.368$ in $\log_{10}$ gap ratio at $D=30$. The natural explanation that a displacement
+helps in proportion to the geometric information it carries is falsified alongside it: the
+uninformative null control is the least harmful operator of the five, while the ellipsoid
+projection, whose displacement is a true surface normal with $D$ degrees of freedom, loses
+the largest share of matched pairs and is the only operator significantly harmful whether
+or not the optimum sits at the domain centre.
+
+We could not reproduce the working regime by imitating its surface features: the loop's
+repair geometry, limit magnitude, budget, dimensionality, objective rank-deficiency, plant
+lag and long-traverse initialisation, singly and in combination, never made the term
+beneficial, and a further campaign of $19{,}200$ runs in which the optimum drifts at four
+rates refutes the tracking conjecture in the direction opposite to the one predicted, the
+term becoming more harmful as the target moves faster. One quantitative signal does
+survive and points at a mechanism: across the $\beta$ sweep the benefit tracks repair
+saturation almost exactly, at Spearman $-0.964$ between distance AUC and repair rate
+($p=4.5\times10^{-4}$), which would suggest the term acts by driving candidates against the
+rate limit rather than by supplying search direction. That account would explain both
+regimes at once, since saturating a rate limit is what good tracking requires and what a
+static search with interior optima cannot afford.
+
+We conclude that displacement reuse is a control signal for rate-constrained tracking
+rather than a general search signal; that benchmark results for this family should be read
+as confounded unless a shifted-optimum control is reported alongside them; and that the
+saturation account is the most promising remaining explanation of the dissociation, and a
+testable one.
 \end{abstract}
 
 \paragraph{Keywords.} algorithm components; repair operators; constraint handling;
@@ -601,6 +620,25 @@ $\beta$ alone, so the displacement term accounts for $78.1\%$ of the effect. On 
 environment the mechanism works, it works through the term under study, and the evidence
 is a dose-response rather than a single comparison.
 
+\paragraph{The benefit tracks repair saturation.} The same sweep carries a signal about
+mechanism. The fraction of evaluations on which the rate limit actually fires rises
+monotonically with $\beta$, from $0.8770$ at $\beta = 0$ to $0.9999$ at $\beta = 1.50$, and
+across the seven levels distance AUC and that firing rate are almost perfectly
+anti-correlated (Spearman $-0.964$, $p = 4.5 \times 10^{-4}$, $n = 7$). The component is
+therefore not simply improving the loop; it is improving it in lockstep with how hard it
+drives the applied control against its own rate limit. The natural reading is that
+$\beta\,\Delta r$ acts less as a search direction than as a slew-maximising term: the
+refused part of the previous step is re-injected, so the control is pushed back towards the
+limit that clipped it. In a rate-constrained tracking problem that is close to the right
+behaviour, since the fastest admissible approach to a set point is to saturate the limit.
+On a static problem with an interior optimum it is close to the worst available behaviour,
+since it pins candidates against a boundary the optimum does not lie on. We state this as
+a hypothesis rather than a result: it rests on seven levels of one sweep, and the decisive
+test is whether a bang-bang policy that always moves at the maximum admissible rate
+towards the set point matches the component's performance. If it does, the mechanism
+reduces to saturation; if it does not, the term supplies something a saturating policy
+cannot.
+
 \subsection{What the ranking does and does not say}
 
 Table~\ref{tab:rank} gives the mean rank of twelve arms over the 21 profiles. The term
@@ -667,10 +705,17 @@ as many directions as there are individuals. That difference turns $\Delta r$ fr
 per-individual quantity into a population-coherent one, and it is the candidate we would
 test next.
 
-Until that is settled, the honest summary is narrow: the term is a usable signal in at
-least one deployed rate-constrained tracking loop, it is harmful on static benchmark
-problems under five repair geometries, and the structural property that separates the two
-has not been identified.
+Two candidate explanations therefore stand, and they are not exclusive: population
+coherence, described above, and the saturation account of
+Section~\ref{sec:loop}, under which the term works by driving the control against its rate
+limit rather than by indicating a direction. The second is the more readily testable of
+the two, since it predicts that a bang-bang maximum-slew policy should reproduce the
+benefit. Until one of them is settled, the honest summary is bounded: the term is a usable
+signal in at least one deployed rate-constrained tracking loop, where its effect is
+isolated by a monotone dose-response against a stream-identical baseline; it does not
+transfer to static benchmark problems under any of five repair geometries; and the
+structural property that separates the two regimes has been narrowed to two candidates
+rather than identified.
 
 \section{Discussion}
 
