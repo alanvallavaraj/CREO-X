@@ -72,16 +72,16 @@ rates refutes the tracking conjecture in the direction opposite to the one predi
 term becoming more harmful as the target moves faster. One quantitative signal does
 survive and points at a mechanism: across the $\beta$ sweep the benefit tracks repair
 saturation almost exactly, at Spearman $-0.964$ between distance AUC and repair rate
-($p=4.5\times10^{-4}$), which would suggest the term acts by driving candidates against the
-rate limit rather than by supplying search direction. That account would explain both
-regimes at once, since saturating a rate limit is what good tracking requires and what a
-static search with interior optima cannot afford.
+($p = 4.5 \times 10^{-4}$), so whatever the term supplies is delivered in proportion to how
+often the rate limit engages. We report that regularity without committing to a direction
+of action: establishing one requires fixing the sign convention of the applied
+displacement in the deployed controller, which we have not done.
 
 We conclude that displacement reuse is a control signal for rate-constrained tracking
 rather than a general search signal; that benchmark results for this family should be read
 as confounded unless a shifted-optimum control is reported alongside them; and that the
-saturation account is the most promising remaining explanation of the dissociation, and a
-testable one.
+co-variation of benefit with repair saturation is the most promising remaining lead on the
+dissociation.
 \end{abstract}
 
 \paragraph{Keywords.} algorithm components; repair operators; constraint handling;
@@ -625,19 +625,17 @@ mechanism. The fraction of evaluations on which the rate limit actually fires ri
 monotonically with $\beta$, from $0.8770$ at $\beta = 0$ to $0.9999$ at $\beta = 1.50$, and
 across the seven levels distance AUC and that firing rate are almost perfectly
 anti-correlated (Spearman $-0.964$, $p = 4.5 \times 10^{-4}$, $n = 7$). The component is
-therefore not simply improving the loop; it is improving it in lockstep with how hard it
-drives the applied control against its own rate limit. The natural reading is that
-$\beta\,\Delta r$ acts less as a search direction than as a slew-maximising term: the
-refused part of the previous step is re-injected, so the control is pushed back towards the
-limit that clipped it. In a rate-constrained tracking problem that is close to the right
-behaviour, since the fastest admissible approach to a set point is to saturate the limit.
-On a static problem with an interior optimum it is close to the worst available behaviour,
-since it pins candidates against a boundary the optimum does not lie on. We state this as
-a hypothesis rather than a result: it rests on seven levels of one sweep, and the decisive
-test is whether a bang-bang policy that always moves at the maximum admissible rate
-towards the set point matches the component's performance. If it does, the mechanism
-reduces to saturation; if it does not, the term supplies something a saturating policy
-cannot.
+therefore not simply improving the loop; it is improving it in lockstep with how often the
+rate limit engages. We record the regularity and stop short of a mechanism. Two readings
+are available and they point in opposite directions: $\Delta r$ as defined is the
+correction the limiter applied, which is directed inward, so re-injecting it damps the
+step; but the firing rate rises with $\beta$, which is what one would expect if candidates
+were being driven further outside the admissible box. Deciding between these requires
+fixing the sign convention of the applied displacement in the deployed controller against
+its implementation, which is outside the scope of this paper. We note the test that would
+settle it: whether a policy that always moves at the maximum admissible rate towards the
+set point reproduces the component's advantage. If it does, the effect reduces to
+saturation; if it does not, the term supplies something a saturating policy cannot.
 
 \subsection{What the ranking does and does not say}
 
@@ -708,9 +706,7 @@ test next.
 Two candidate explanations therefore stand, and they are not exclusive: population
 coherence, described above, and the saturation account of
 Section~\ref{sec:loop}, under which the term works by driving the control against its rate
-limit rather than by indicating a direction. The second is the more readily testable of
-the two, since it predicts that a bang-bang maximum-slew policy should reproduce the
-benefit. Until one of them is settled, the honest summary is bounded: the term is a usable
+limit rather than by indicating a direction. Neither is settled, and until one of them is, the honest summary is bounded: the term is a usable
 signal in at least one deployed rate-constrained tracking loop, where its effect is
 isolated by a monotone dose-response against a stream-identical baseline; it does not
 transfer to static benchmark problems under any of five repair geometries; and the
@@ -780,7 +776,13 @@ the problems where feasibility was attainable within budget rather than to the s
 whole. Finally, seven of the eight hosts reproduce their repair fire rates bit-identically
 across the two platforms we ran on, but CMA-ES does not, because the reference
 implementation differs in version; that arm should be reproduced only against a pinned
-version.
+version. The closed-loop result carries a separate caveat: the benefit reported in
+Section~\ref{sec:loop} has been established within the deployed system and its dose-response
+is internal to it, but we have not reproduced that benefit in a harness rebuilt from the
+loop's stated parameters alone. Those parameters therefore do not appear to be sufficient
+to specify the regime, which is consistent with the dissociation remaining unexplained and
+is a reason to treat the single-environment scope of that result as a real limitation
+rather than a formality.
 
 \section{Reproducibility}
 
