@@ -9,8 +9,6 @@ abstract: >-
 authors:
   - family-names: Vallavaraj
     given-names: "Alan Immanuel Benjamin"
-    email: a.vallavaraj@westminster.ac.uk
-    affiliation: "School of Computer Science and Engineering, University of Westminster, London, UK"
 license: MIT
 repository-code: "https://github.com/alanvallavaraj/CREO-X"
 keywords:
