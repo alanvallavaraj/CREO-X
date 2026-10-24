@@ -44,7 +44,9 @@ a second deployed loop, under a different plant lag, landscape family and target
 with the term attached to a different host: over $224{,}000$ episodes and $32{,}000$ exactly
 matched tuples per level, distance AUC and success are both strictly monotone in $\beta$,
 and at $\beta=0.90$ the term improves tracking in $91.2\%$ of matched episodes for a
-$15.8\%$ reduction in AUC. The effect is not peculiar to one host: every one of the six hosts tested improves, over $67{,}200$ matched pairs each,
+$15.8\%$ reduction in AUC. Because neither loop is ours to distribute, we also supply a
+surrogate built from no component of either, on which the dose-response reproduces at
+$13.17\%$, so the positive result can be checked without access to the deployed systems. The effect is not peculiar to one host: every one of the six hosts tested improves, over $67{,}200$ matched pairs each,
 with relative gains from $3.136\%$ to $21.306\%$ and Holm-corrected $p$ below
 double-precision resolution throughout, and the strongest configuration attains a mean
 rank of $1.000$ across twenty-one stress profiles, placing first in every one. The gain is
@@ -784,6 +786,75 @@ the exact reverse of the ordering of the rate at which the limiter fires. Two en
 and two hosts now show the same coupling, which moves the saturation account from a
 single-sample curiosity to the leading description of what the term does.
 
+\subsection{A distributable surrogate}
+\label{sec:surrogate}
+
+Both loops above are deployed systems we cannot distribute, which would leave the paper's
+positive result unverifiable. We therefore built a surrogate that uses no component of
+either: the plant is a seeded pseudorandom linear map with rows normalised in $\ell_1$, the
+four landscapes are defined in the published file, and the controller is DE/rand/1/bin
+carrying the three coefficients. It is distributed in the repository and runs in minutes on
+a laptop.
+
+The surrogate reproduces the dose-response. Over $11{,}520$ episodes and $1{,}280$ exactly
+matched tuples, spanning eight pseudorandom plants and four landscapes, distance AUC falls
+strictly monotonically in $\beta$ and the term improves tracking in $74.5\%$ of matched
+tuples at $\beta = 0.90$, for a $13.17\%$ reduction. The coupling between benefit and
+limiter firing is again exactly $-1.000$. Success rises overall but is not monotone, dipping
+at $\beta = 0.75$ and $\beta = 1.50$, which is the pattern of the first deployed loop rather
+than the second.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Distributable surrogate: $11{,}520$ episodes, $1{,}280$ exactly matched tuples,
+eight pseudorandom plants $\times$ four landscapes $\times$ forty seeds. Gains and
+matched-tuple fractions are paired against $\beta = 0$; Wilcoxon signed-rank, two-sided,
+Holm-corrected.}
+\label{tab:surrogate}
+\begin{tabular}{lrrrr}
+\toprule
+$\beta$ & AUC $\downarrow$ & success $\uparrow$ & repair rate & mean step \\
+\midrule
+0.00 & 0.2734 & 0.6617 & 0.8848 & 0.1363 \\
+0.25 & 0.2666 & 0.6742 & 0.8958 & 0.1362 \\
+0.50 & 0.2553 & 0.7133 & 0.9172 & 0.1364 \\
+0.75 & 0.2440 & 0.7086 & 0.9466 & 0.1361 \\
+0.90 & 0.2374 & 0.7008 & 0.9662 & 0.1363 \\
+1.10 & 0.2307 & 0.7109 & 0.9889 & 0.1375 \\
+1.50 & 0.2278 & 0.6734 & 0.9994 & 0.1367 \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.6em}
+\begin{tabular}{lrrr}
+\toprule
+Comparison & gain (\%) & frac.\ better & $p_{\text{Holm}}$ \\
+\midrule
+$\beta = 0.90$ vs $\beta = 0$ & +13.173 & 0.745 & $1.9 \times 10^{-76}$ \\
+max-slew vs $\beta = 0$ & -0.013 & 0.463 & $1.5 \times 10^{-1}$ \\
+unconditional carry, $\beta = 0.90$, vs $\beta = 0$ & +14.846 & 0.762 & $9.3 \times 10^{-85}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two results in Table~\ref{tab:surrogate} bear on mechanism, and both are now checkable by a
+reader. First, the mean applied step is flat across the sweep, varying only between
+$0.1361$ and $0.1375$ while AUC falls by $17\%$, and the max-slew arm reproduces nothing
+($-0.013\%$, $46.3\%$ of tuples, $p_{\text{Holm}} = 0.15$) despite carrying the largest mean
+step of any arm at $0.1478$. The benefit is therefore not obtained by moving the control
+further, in a second setting and in public code.
+
+Second, we used the surrogate to test a structural conjecture and it failed. We had supposed
+that the effect required the displacement to be carried only for accepted population
+members, so that a rejected proposal retains its parent's. Overwriting the carried
+displacement unconditionally instead reproduces the dose-response and is marginally stronger
+($+14.85\%$ against $+13.17\%$, $p_{\text{Holm}} = 1.7 \times 10^{-7}$ between the two). The
+carrying rule is not what the effect depends on. What did matter, in our experience of
+building this surrogate, is that the population persists across cycles under greedy
+selection: an earlier attempt built around a host that rebuilds its entire population each
+cycle reproduced no benefit at any coefficient.
+
 \subsection{An unexplained dissociation}
 
 The term helps here and harms everywhere else in this paper, and we were unable to find
@@ -901,14 +972,15 @@ whole. Finally, seven of the eight hosts reproduce their repair fire rates bit-i
 across the two platforms we ran on, but CMA-ES does not, because the reference
 implementation differs in version; that arm should be reproduced only against a pinned
 version. The closed-loop result carries a separate caveat. The dose-response holds in two
-deployed loops, but those two share their controller implementation and plant module, so
-they are two task configurations rather than two independent systems; and a harness we
-rebuilt from the loops' stated parameters alone did not reproduce the benefit at all. Those
-parameters therefore do not appear sufficient to specify the regime. What the replication
-establishes is that the effect survives changes of plant lag, landscape family, target set,
-upstream noise source and host; what it does not establish is that the effect survives a
-different implementation of the loop itself, and that remains the most important open
-check on the positive result.
+deployed loops, and those two share their controller implementation and plant module, so
+they are two task configurations rather than two independent systems. The surrogate of
+Section~\ref{sec:surrogate} is an independent implementation and does reproduce the
+dose-response, which removes the sharpest form of that objection; we note, however, that our
+first attempt at such a surrogate, built around a host that rebuilds its population each
+cycle, reproduced no benefit at any coefficient, so a reimplementation that matches the
+stated parameters is not on its own sufficient to recover the regime. Readers should treat
+the published coefficients as necessary but not sufficient, and the surrogate rather than
+the parameter list as the specification.
 
 \section{Reproducibility}
 
@@ -954,8 +1026,10 @@ second-loop configuration & \texttt{812aeae7f23f5a9257b04fdd665b5a7c} \\
 \end{tabular}
 \end{table}
 
-Three properties of the closed-loop design are checkable from the tables alone and do not
-require the system: that the paired seed is a function of landscape, target, repeat and
+The surrogate of Section~\ref{sec:surrogate} is in the repository and depends on nothing
+outside it, so the dose-response itself can be reproduced without the deployed systems; the
+dependency above is required only to reproduce the deployed-loop numbers exactly. Three
+further properties of the closed-loop design are checkable from the tables alone: that the paired seed is a function of landscape, target, repeat and
 noise-source index but not of $\beta$, so the matched-tuple counts are exact and equal at
 every level; that the arm means and the paired comparisons recompute from each other; and
 that the $\beta = 0$ and max-slew arms share a coefficient set differing only in the step
