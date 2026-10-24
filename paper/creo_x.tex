@@ -922,5 +922,46 @@ compute.
 Both campaigns assert full row count and arm coverage before writing output. The
 aggregate tables reported here recompute exactly from the committed per-cell table.
 
+The closed-loop results are a different case and we state its limits exactly. The two loops
+are a deployed system which is not ours to distribute, so the repository carries the scripts
+that drive it, the per-level and per-arm aggregate tables, and the analysis, but not the
+system itself; it is a local dependency, in the same way that a benchmark package obtained
+separately would be. Ten files are required, and we record their SHA-256 prefixes so that a
+holder of the system can confirm they are running the code these numbers came from rather
+than a later revision.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Closed-loop dependency, identified by content rather than by path. SHA-256,
+first 32 hex digits.}
+\label{tab:loopdep}
+\begin{tabular}{ll}
+\toprule
+Component & SHA-256 (truncated) \\
+\midrule
+controller module & \texttt{1d7b786112b62e245c73decc10a83527} \\
+repair / rate-limit module & \texttt{d05feaa528c7b64530c86e3bff8ea87a} \\
+plant module & \texttt{be042fb4406565989c618f9295d20649} \\
+first-loop configuration & \texttt{12d9e875aba14a3b7ed7088666a4241d} \\
+episode chain & \texttt{e1a5d8ee6b19e7e87530c11e2b4d3ddb} \\
+controller adapter & \texttt{15ca4948835101d6d10859a713f436bb} \\
+residual sampler & \texttt{c4320916abda7eb9bcddd287fe8e9b67} \\
+residual pool loader & \texttt{7a9b19729637c091d91b84447a9cb3e7} \\
+condition matrix & \texttt{41d7cb8aaf1759030274f853034e041d} \\
+second-loop configuration & \texttt{812aeae7f23f5a9257b04fdd665b5a7c} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Three properties of the closed-loop design are checkable from the tables alone and do not
+require the system: that the paired seed is a function of landscape, target, repeat and
+noise-source index but not of $\beta$, so the matched-tuple counts are exact and equal at
+every level; that the arm means and the paired comparisons recompute from each other; and
+that the $\beta = 0$ and max-slew arms share a coefficient set differing only in the step
+rescaling. Anyone unable to obtain the system can still audit the inference, and the
+static-search campaigns, which carry the paper's negative result, reproduce end to end from
+the repository alone.
+
 \bibliography{creo_x}
 \end{document}
