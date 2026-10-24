@@ -5,7 +5,6 @@ Code, campaigns and results for:
 > **CREO: a repair-displacement term for population-based search, and the boundary of its
 > usefulness**
 > Alan Immanuel Benjamin Vallavaraj, School of Computer Science and Engineering,
-> University of Westminster, London, UK
 
 The manuscript is in [`paper/creo_x.pdf`](paper/creo_x.pdf) and builds from
 [`paper/creo_x.tex`](paper/creo_x.tex).
