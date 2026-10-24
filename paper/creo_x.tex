@@ -82,9 +82,12 @@ direction of action resolves an apparent contradiction: the displacement points 
 construction, yet applied path length, control total variation and raw displacement
 magnitude all rise with $\beta$ at Spearman $+1.000$ and the mean per-cycle step grows from
 $67.1\%$ to $80.6\%$ of the largest admissible step, because the correction is applied one
-cycle after the rate-limit box it was measured against has moved. The term acts as a slew
-amplifier, which is why a regime that rewards saturating a rate limit benefits where a
-static search with interior optima does not.
+cycle after the rate-limit box it was measured against has moved. That larger step is not
+itself the mechanism: an arm that rescales the applied step to saturate the limiter without
+using the displacement is $0.015\%$ worse than baseline and ahead in $52.1\%$ of matched
+pairs, while the displacement term is ahead in $91.4\%$ against it. What separates them is
+how often the limiter fires, which the term raises by $6.81\%$ and step rescaling by
+$0.0007\%$.
 
 We conclude that displacement reuse is a control signal for rate-constrained tracking
 rather than a general search signal; that benchmark results for this family should be read
@@ -647,16 +650,56 @@ box \emph{at the cycle it was measured}, and is applied one cycle later, by whic
 rate-limit box has translated to centre on the new operating point. Against the moved box it
 is no longer inward: raw displacement magnitude grows from $0.123$ at $\beta=0$ to $5.185$ at
 $\beta=1.50$ against a per-component cap of $0.10$, so a larger share of candidates is
-clipped, and a clipped candidate in a rate-limited tracker is one sitting on the limit. The
-term is therefore a slew amplifier implemented as a one-cycle-stale inward correction, which
-couples benefit to limiter firing without contradicting the sign of $\Delta r$.
+clipped. A natural reading of that is that the term works by moving the control faster, and
+it is wrong. We tested it directly with a max-slew arm: the same host at $\beta = 0$, but with
+the applied step rescaled so that its largest component reaches the rate limit, saturating
+the limiter without using $\Delta r$ at all. Table~\ref{tab:maxslew} reports the three arms
+over $96{,}000$ episodes and $32{,}000$ exactly matched tuples each.
 
-Two caveats attach to that account. It explains the closed loop but not, on its own, why the
-same term is harmful in static search, where a one-cycle-stale correction has no moving box
-to be stale against. And at the largest coefficient tested the controller approaches
-bang-bang behaviour, so the outstanding check is whether a policy that always moves at the
-maximum admissible rate towards the set point reproduces the advantage; the deployed
-$\beta = 0.90$ sits well short of that regime, at a displacement magnitude of $0.217$.
+\begin{table}[htbp]
+\centering
+\small
+\caption{Does saturating the rate limit reproduce the term's advantage? Second loop,
+$96{,}000$ episodes, $32{,}000$ exactly matched tuples per arm. The max-slew arm rescales the
+applied step so its largest component reaches the limit, at $\beta = 0$. Gains and
+matched-pair fractions are paired; Wilcoxon signed-rank, two-sided, Holm-corrected.}
+\label{tab:maxslew}
+\begin{tabular}{lrrrr}
+\toprule
+Arm & AUC $\downarrow$ & success $\uparrow$ & repair rate & path length \\
+\midrule
+$\beta = 0$ (baseline) & 0.5762 & 0.1141 & 0.9192 & 2.4684 \\
+$\beta = 0.90$ (deployed) & 0.4851 & 0.2345 & 0.9818 & 2.6917 \\
+max-slew, $\beta = 0$ & 0.5763 & 0.1166 & 0.9192 & 2.5683 \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.6em}
+\begin{tabular}{lrrr}
+\toprule
+Comparison & gain (\%) & frac.\ better & $p_{\text{Holm}}$ \\
+\midrule
+$\beta = 0.90$ vs $\beta = 0$ & +15.813 & 0.912 & $<10^{-300}$ \\
+max-slew vs $\beta = 0$ & -0.015 & 0.521 & $8.9 \times 10^{-16}$ \\
+$\beta = 0.90$ vs max-slew & +15.826 & 0.914 & $<10^{-300}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Saturating the limit buys nothing. The max-slew arm is $0.015\%$ \emph{worse} than the
+$\beta = 0$ baseline and ahead in $52.1\%$ of matched pairs, a fraction barely separable from
+chance despite a small $p$ at this sample size, while the displacement term is ahead in
+$91.4\%$ of pairs against that same max-slew arm. The discriminating quantity is not step
+size but how often the limiter fires: max-slew raises path length by $4.04\%$ and the repair
+rate by $0.0007\%$, whereas $\beta = 0.90$ raises path length by $9.05\%$ and the repair rate
+by $6.81\%$. Moving further per cycle does not help; driving candidates against the
+constraint so that the limiter actually engages does.
+
+What the term does, then, is not gain tuning, and the trivial alternative to it has been
+tested and fails. What remains unexplained is why clipping a larger share of the population
+should help a tracking loop at all, and why the same pressure is harmful in static search,
+where candidates clipped against a fixed box are pinned to a boundary the optimum does not
+lie on. We leave that as the open half of the dissociation.
 
 \subsection{What the ranking does and does not say}
 
@@ -782,10 +825,11 @@ coherence, described above, and the saturation account, under which the term wor
 driving the control against its rate limit rather than by indicating a direction. The
 saturation account is now the better supported of the two, since the coupling between
 benefit and limiter firing reproduces across both loops and both hosts, at Spearman
-$-0.964$ and $-1.000$, and since its direction of action has been traced to the
-one-cycle-stale inward correction described in Section~\ref{sec:loop}. What it does not yet
-explain is the static side, where there is no moving constraint box for a stale correction
-to be stale against, so until that half is settled, the honest summary is bounded: the term is a usable
+$-0.964$ and $-1.000$, and since a max-slew control arm rules out the obvious deflationary
+reading of it, that the term merely moves the control faster. What it does not yet explain is
+why clipping more of the population helps a tracking loop, nor the static side, where
+candidates clipped against a fixed box are pinned to a boundary the optimum does not lie on;
+until that half is settled, the honest summary is bounded: the term is a usable
 signal in at least one deployed rate-constrained tracking loop, where its effect is
 isolated by a monotone dose-response against a stream-identical baseline; it does not
 transfer to static benchmark problems under any of five repair geometries; and the
