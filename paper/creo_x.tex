@@ -77,9 +77,14 @@ term becoming more harmful as the target moves faster. One quantitative signal d
 survive and points at a mechanism: across the $\beta$ sweep the benefit tracks repair
 saturation almost exactly, at Spearman $-0.964$ between distance AUC and repair rate
 ($p = 4.5 \times 10^{-4}$) in the first loop and $-1.000$ in the second, so whatever the term
-supplies is delivered in proportion to how often the rate limit engages. We report that regularity without committing to a direction
-of action: establishing one requires fixing the sign convention of the applied
-displacement in the deployed controller, which we have not done.
+supplies is delivered in proportion to how often the rate limit engages. Tracing the
+direction of action resolves an apparent contradiction: the displacement points inward by
+construction, yet applied path length, control total variation and raw displacement
+magnitude all rise with $\beta$ at Spearman $+1.000$ and the mean per-cycle step grows from
+$67.1\%$ to $80.6\%$ of the largest admissible step, because the correction is applied one
+cycle after the rate-limit box it was measured against has moved. The term acts as a slew
+amplifier, which is why a regime that rewards saturating a rate limit benefits where a
+static search with interior optima does not.
 
 We conclude that displacement reuse is a control signal for rate-constrained tracking
 rather than a general search signal; that benchmark results for this family should be read
@@ -628,16 +633,30 @@ across the seven levels distance AUC and that firing rate are almost perfectly
 anti-correlated (Spearman $-0.964$, $p = 4.5 \times 10^{-4}$, $n = 7$; the same coupling is
 $-1.000$ in the second loop of Section~\ref{sec:loop2}). The component is
 therefore not simply improving the loop; it is improving it in lockstep with how often the
-rate limit engages. We record the regularity and stop short of a mechanism. Two readings
-are available and they point in opposite directions: $\Delta r$ as defined is the
-correction the limiter applied, which is directed inward, so re-injecting it damps the
-step; but the firing rate rises with $\beta$, which is what one would expect if candidates
-were being driven further outside the admissible box. Deciding between these requires
-fixing the sign convention of the applied displacement in the deployed controller against
-its implementation, which is outside the scope of this paper. We note the test that would
-settle it: whether a policy that always moves at the maximum admissible rate towards the
-set point reproduces the component's advantage. If it does, the effect reduces to
-saturation; if it does not, the term supplies something a saturating policy cannot.
+rate limit engages.
+
+The direction in which it does so is not the one the definition suggests, and the
+discrepancy is instructive. $\Delta r$ is the correction the limiter \emph{applied},
+$\mathrm{clip}(x, u_{t-1} \pm \delta) - x$, so it points inward, back into the admissible
+box; adding $+\beta\,\Delta r$ is by construction a damping term. Measured behaviour is the
+opposite. Over $44{,}800$ episodes of the second loop, raw displacement magnitude, applied
+path length, control total variation and oscillation index all rise monotonically with
+$\beta$ at Spearman $+1.000$, and the mean per-cycle step grows from $67.1\%$ to $80.6\%$ of
+the largest admissible step. The reconciliation is that $\Delta r$ is inward relative to the
+box \emph{at the cycle it was measured}, and is applied one cycle later, by which time the
+rate-limit box has translated to centre on the new operating point. Against the moved box it
+is no longer inward: raw displacement magnitude grows from $0.123$ at $\beta=0$ to $5.185$ at
+$\beta=1.50$ against a per-component cap of $0.10$, so a larger share of candidates is
+clipped, and a clipped candidate in a rate-limited tracker is one sitting on the limit. The
+term is therefore a slew amplifier implemented as a one-cycle-stale inward correction, which
+couples benefit to limiter firing without contradicting the sign of $\Delta r$.
+
+Two caveats attach to that account. It explains the closed loop but not, on its own, why the
+same term is harmful in static search, where a one-cycle-stale correction has no moving box
+to be stale against. And at the largest coefficient tested the controller approaches
+bang-bang behaviour, so the outstanding check is whether a policy that always moves at the
+maximum admissible rate towards the set point reproduces the advantage; the deployed
+$\beta = 0.90$ sits well short of that regime, at a displacement magnitude of $0.217$.
 
 \subsection{What the ranking does and does not say}
 
@@ -763,8 +782,10 @@ coherence, described above, and the saturation account, under which the term wor
 driving the control against its rate limit rather than by indicating a direction. The
 saturation account is now the better supported of the two, since the coupling between
 benefit and limiter firing reproduces across both loops and both hosts, at Spearman
-$-0.964$ and $-1.000$. It is still a correlation rather than a mechanism, and until the
-direction of action is settled, the honest summary is bounded: the term is a usable
+$-0.964$ and $-1.000$, and since its direction of action has been traced to the
+one-cycle-stale inward correction described in Section~\ref{sec:loop}. What it does not yet
+explain is the static side, where there is no moving constraint box for a stale correction
+to be stale against, so until that half is settled, the honest summary is bounded: the term is a usable
 signal in at least one deployed rate-constrained tracking loop, where its effect is
 isolated by a monotone dose-response against a stream-identical baseline; it does not
 transfer to static benchmark problems under any of five repair geometries; and the
